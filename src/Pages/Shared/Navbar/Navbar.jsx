@@ -9,7 +9,7 @@ import Logo from '../../../components/Logo/Logo';
 const Navbar = () => {
     const { user, signOutUser } = useAuth();
     const links = <>
-        <li><NavLink to="/services">Services</NavLink></li>
+        <li><NavLink to="/">Home</NavLink></li>
         <li><NavLink to="/coverage">Coverage</NavLink></li>
         <li><NavLink to="/about-us">About Us</NavLink></li>
 
@@ -63,11 +63,11 @@ const Navbar = () => {
                         :
                         <Link className='btn' to='/login'>Sign In</Link>
                 }
-                <Link to='/rider'
+                <Link to='/donate'
                     className='btn btn-primary
-                     text-black font-bold ml-3'>Be a rider</Link>
-                <button className='icon-circle-container -rotate-45'>
-                    <FaArrowRight className='text-2xl text-[#CAEB66]
+                     text-white font-bold ml-3'>Donate</Link>
+                <button className='icon-circle-container w-10 h-10 rounded-full bg-black -rotate-45'>
+                    <FaArrowRight className='text-3xl text-white
                          font-extrabold' />
                 </button>
             </div>

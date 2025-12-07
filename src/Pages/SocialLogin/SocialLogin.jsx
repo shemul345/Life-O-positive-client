@@ -17,6 +17,7 @@ const SocialLogin = () => {
                 // console.log(result.user)
                 toast.success("You’re logged in! Enjoy your session", {
                     position: "top-center"
+                    
                 });
 
 
