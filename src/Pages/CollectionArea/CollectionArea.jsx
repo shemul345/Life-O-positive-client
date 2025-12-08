@@ -7,7 +7,7 @@ const CollectionArea = () => {
     const position = [23.6850, 90.3563];
     const collectionCenters = useLoaderData();
     const mapRef = useRef(null);
-    console.log(collectionCenters)
+    // console.log(collectionCenters)
 
     const handleSearch = (e) => {
         e.preventDefault();

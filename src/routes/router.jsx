@@ -13,7 +13,8 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                Component:Home
+                Component: Home,
+                loader: () => fetch('/collection_area.json').then(res => res.json())
             },
             {
                 path: "collection-area",
