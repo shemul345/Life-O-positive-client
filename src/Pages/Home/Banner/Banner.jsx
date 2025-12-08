@@ -16,7 +16,7 @@ const Banner = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
 
 
-                        {/* LEFT: content */}
+                        {/* Left content */}
                         <div className="lg:col-span-6 flex flex-col gap-6">
                             <div className="flex items-center gap-3">
                                 <span className="inline-block w-12 h-12 rounded-full bg-red-600/20 flex items-center justify-center">
@@ -68,20 +68,16 @@ const Banner = () => {
                         </div>
 
 
-                        {/* RIGHT: image / illustration */}
+                        {/* Right Content */}
                         <div className="lg:col-span-6 flex justify-center lg:justify-end">
                             <div className="w-full h-5xl max-w-md lg:max-w-lg">
-                                {/* Decorative card */}
+                                {/* card */}
                                 <div className="relative rounded-3xl p-6 shadow-2xl" style={{ background: "linear-gradient(180deg,#fff8f8, #fff)" }}>
 
-
-                                    {/* big blood-drop illustration */}
                                     <div className="flex items-center justify-center">
                                         <img className=' h-[400px] rounded-2xl' src={bannerImage} alt="" />
                                     </div>
 
-
-                                    {/* small stats — optional */}
                                     <div className="mt-6 grid grid-cols-3 gap-3 text-center">
                                         <div>
                                             <div className="text-2xl font-bold text-red-600">1,200+</div>
