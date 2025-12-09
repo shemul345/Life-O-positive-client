@@ -66,10 +66,10 @@ const Navbar = () => {
                 <Link to='/donate'
                     className='btn btn-primary
                      text-white font-bold ml-3'>Donate</Link>
-                <button className='icon-circle-container w-10 h-10 rounded-full bg-black -rotate-45'>
+                {/* <button className='icon-circle-container w-10 h-10 rounded-full bg-black -rotate-45'>
                     <FaArrowRight className='text-3xl text-white
                          font-extrabold' />
-                </button>
+                </button> */}
             </div>
         </div>
     );

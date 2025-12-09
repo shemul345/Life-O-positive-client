@@ -12,8 +12,8 @@ const AuthLayout = () => {
                     <Outlet></Outlet>
                 </section>
             </div>
-            <div className='flex-1 bg-gray-50'>
-                <img className='mx-auto mt-25' src={authImage} alt="" />
+            <div className='flex-1 min-h-screen'>
+                <img className='mx-auto mt-36' src={authImage} alt="" />
             </div>
         </div>
     );

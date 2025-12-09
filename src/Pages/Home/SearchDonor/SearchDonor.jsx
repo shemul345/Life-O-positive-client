@@ -8,7 +8,7 @@ const SearchDonor = ({ area }) => {
              text-red-700 text-center
              mb-10'>Search Donors</h1>
             <form>
-                <fieldset className='flex items-center justify-center gap-5'>
+                <fieldset className='flex items-center justify-center gap-5 flex-col lg:flex-row'>
                     <div className='flex flex-col w-52'>
                         <label className='text-black'>District</label>
                         <select defaultValue="Pick a district" className="select text-black appearance-none">
