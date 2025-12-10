@@ -5,6 +5,9 @@ import Login from "../Pages/Auth/Login/Login";
 import Register from "../Pages/Auth/Register/Register";
 import Home from "../Pages/Home/Home/Home";
 import CollectionArea from "../Pages/CollectionArea/CollectionArea";
+import PrivateRouter from "./PrivateRouter";
+import DashboardLayout from "../Layouts/DashboardLayout/DashboardLayout";
+import Donate from "../Pages/Dashboard/Donate/Donate";
 
 export const router = createBrowserRouter([
     {
@@ -34,6 +37,16 @@ export const router = createBrowserRouter([
             {
                 path: 'register',
                 Component: Register
+            }
+        ]
+    },
+    {
+        path: 'dashboard',
+        element: <PrivateRouter><DashboardLayout></DashboardLayout></PrivateRouter>,
+        children: [
+            {
+                path:'donate',
+                Component:Donate
             }
         ]
     }

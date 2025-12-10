@@ -63,7 +63,7 @@ const Navbar = () => {
                         :
                         <Link className='btn' to='/login'>Sign In</Link>
                 }
-                <Link to='/donate'
+                <Link to='/dashboard/donate'
                     className='btn btn-primary
                      text-white font-bold ml-3'>Donate</Link>
                 {/* <button className='icon-circle-container w-10 h-10 rounded-full bg-black -rotate-45'>
