@@ -65,3 +65,4 @@ const CollectionArea = () => {
 };
 
 export default CollectionArea;
+

@@ -7,7 +7,7 @@ import Home from "../Pages/Home/Home/Home";
 import CollectionArea from "../Pages/CollectionArea/CollectionArea";
 import PrivateRouter from "./PrivateRouter";
 import DashboardLayout from "../Layouts/DashboardLayout/DashboardLayout";
-import Donate from "../Pages/Dashboard/Donate/Donate";
+import MyDonationRequests from "../Pages/Dashboard/MyDonationRequests/MyDonationRequests";
 
 export const router = createBrowserRouter([
     {
@@ -17,12 +17,12 @@ export const router = createBrowserRouter([
             {
                 index: true,
                 Component: Home,
-                loader: () => fetch('/collection_area.json').then(res => res.json())
+                loader: () => fetch('/CollectonArea.json').then(res => res.json())
             },
             {
                 path: "collection-area",
                 Component: CollectionArea,
-                loader: () => fetch('/collection_area.json').then(res => res.json())
+                loader: () => fetch('/CollectonArea.json').then(res => res.json())
             }
         ]
     },
@@ -45,8 +45,8 @@ export const router = createBrowserRouter([
         element: <PrivateRouter><DashboardLayout></DashboardLayout></PrivateRouter>,
         children: [
             {
-                path:'donate',
-                Component:Donate
+                path: 'my-donation-requests',
+                Component:MyDonationRequests
             }
         ]
     }

@@ -36,8 +36,8 @@ const DashboardLayout = () => {
 
 
                         <li>
-                            <NavLink to="/dashboard/my-parcels" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="My Parcels"> <FaProductHunt />
-                                <span className="is-drawer-close:hidden">My Parcels</span></NavLink>
+                            <NavLink to="/dashboard/my-donation-requests" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="My Donation Requests"> <FaProductHunt />
+                                <span className="is-drawer-close:hidden">My Donation Requests</span></NavLink>
                         </li>
 
 

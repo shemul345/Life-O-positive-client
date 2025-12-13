@@ -15,7 +15,6 @@ const Navbar = () => {
 
         {
             user && <>
-                <li><NavLink to="/send-parcel">Send Parcel</NavLink></li>
                 <li><NavLink to="/dashboard">Dashboard</NavLink></li>
             </>
         }
@@ -66,10 +65,6 @@ const Navbar = () => {
                 <Link to='/dashboard/donate'
                     className='btn btn-primary
                      text-white font-bold ml-3'>Donate</Link>
-                {/* <button className='icon-circle-container w-10 h-10 rounded-full bg-black -rotate-45'>
-                    <FaArrowRight className='text-3xl text-white
-                         font-extrabold' />
-                </button> */}
             </div>
         </div>
     );
