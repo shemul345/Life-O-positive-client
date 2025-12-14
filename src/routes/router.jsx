@@ -8,6 +8,7 @@ import CollectionArea from "../Pages/CollectionArea/CollectionArea";
 import PrivateRouter from "./PrivateRouter";
 import DashboardLayout from "../Layouts/DashboardLayout/DashboardLayout";
 import MyDonationRequests from "../Pages/Dashboard/MyDonationRequests/MyDonationRequests";
+import DonationRequest from "../Pages/Home/DonationRequest/DonationRequest";
 
 export const router = createBrowserRouter([
     {
@@ -23,6 +24,10 @@ export const router = createBrowserRouter([
                 path: "collection-area",
                 Component: CollectionArea,
                 loader: () => fetch('/CollectonArea.json').then(res => res.json())
+            },
+            {
+                path: "donation-request",
+                element:<PrivateRouter><DonationRequest></DonationRequest></PrivateRouter>
             }
         ]
     },

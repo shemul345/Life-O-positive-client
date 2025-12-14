@@ -55,10 +55,12 @@ const Banner = () => {
                                         </SecondaryButton>
                                     </Link>
 
-
-                                    <SecondaryButton  ariaLabel="Check donor eligibility">
-                                        Donor Eligibility
-                                    </SecondaryButton>
+                                    <Link to="/donation-request">
+                                        <PrimaryButton ariaLabel="Check donor eligibility">
+                                            Donation Request
+                                        </PrimaryButton>
+                                    </Link>
+                                    
                                 </div>
                             </div>
 

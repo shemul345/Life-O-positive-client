@@ -23,7 +23,8 @@ const CollectionArea = () => {
     return (
         <div className='my-10'>
             <h1 className='text-5xl text-center font-bold mb-5'>
-                We are available in 64 districts</h1>
+                We are available in 64 districts
+            </h1>
             {/* Search */}
             <div className='my-4'>
                 <form onSubmit={handleSearch}>
@@ -48,15 +49,18 @@ const CollectionArea = () => {
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
                     {
-                        collectionCenters.map((center, index) => <Marker
-                            key={index}
-                            position={[center.latitude, center.longitude]}>
-                            <Popup>
-                                <strong>{center.district}</strong>
-                                <br />
-                                {center.collection_area.join(',')}
-                            </Popup>
-                        </Marker>)
+                        collectionCenters.map((center, index) => (
+                            <Marker
+                                key={index}
+                                position={[center.latitude, center.longitude]}
+                            >
+                                <Popup>
+                                    <strong>{center.district}</strong>
+                                    <br />
+                                    {center.collection_area?.join(', ') || 'No area data'}
+                                </Popup>
+                            </Marker>
+                        ))
                     }
                 </MapContainer>
             </div>

@@ -26,9 +26,9 @@ const Mission = () => {
     console.log('volunteer:', volunteer);
 
     return (
-        <div className='grid grid-cols-3 md:gap-8 gap-6 my-15'>
+        <div className='grid grid-cols-1 lg:grid-cols-3 md:gap-8 gap-6 my-15'>
             {/* Left */}
-            <div className='col-span-1'>
+            <div className='col-span-1 text-center lg:text-left'>
                 <h1 className='text-4xl font-bold text-red-700'>
                     Our Mission: Saving Lives Together
                 </h1>
@@ -45,7 +45,7 @@ const Mission = () => {
 
             {/* Right */}
             {/* ✅ make this take half width on md+ and full on small */}
-            <div className='col-span-2'>
+            <div className='col-span-1 lg:col-span-2'>
                 <Swiper
                     autoplay={{
                         delay: 1500,

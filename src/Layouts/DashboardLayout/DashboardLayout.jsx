@@ -1,6 +1,8 @@
 import React from 'react';
-import { FaCreditCard, FaProductHunt } from 'react-icons/fa';
+import { FaCreditCard } from 'react-icons/fa';
+import { BiDonateBlood } from "react-icons/bi";
 import { NavLink, Outlet } from 'react-router';
+import Logo from '../../components/Logo/Logo';
 
 const DashboardLayout = () => {
     return (
@@ -13,7 +15,9 @@ const DashboardLayout = () => {
                         {/* Sidebar toggle icon */}
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" strokeLinejoin="round" strokeLinecap="round" strokeWidth="2" fill="none" stroke="currentColor" className="my-1.5 inline-block size-4"><path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path><path d="M9 4v16"></path><path d="M14 10l2 2l-2 2"></path></svg>
                     </label>
-                    <div className="px-4">Navbar Title</div>
+                    <div className="text-3xl font-bold ml-5">
+                        Life <span className='text-red-600'>O+</span> Dashboard
+                    </div>
                 </nav>
                 {/* Page content here */}
                 <Outlet></Outlet>
@@ -36,7 +40,8 @@ const DashboardLayout = () => {
 
 
                         <li>
-                            <NavLink to="/dashboard/my-donation-requests" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="My Donation Requests"> <FaProductHunt />
+                            <NavLink to="/dashboard/my-donation-requests" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="My Donation Requests">
+                                <BiDonateBlood className='text-lg' />
                                 <span className="is-drawer-close:hidden">My Donation Requests</span></NavLink>
                         </li>
 
