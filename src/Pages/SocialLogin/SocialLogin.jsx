@@ -3,9 +3,11 @@ import { FcGoogle } from 'react-icons/fc';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router';
 import useAuth from '../../hooks/useAuth';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
 
 const SocialLogin = () => {
     const { signInGoogle } = useAuth();
+    const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -15,8 +17,22 @@ const SocialLogin = () => {
         signInGoogle()
             .then(result => {
                 console.log(result)
-                toast.success('User sign in successfully')
-                navigate(location.state || '/')
+                toast.success('User sign in successfully', {
+                    position: "top-center"
+                })
+
+                // Create user by social login
+                const userInfo = {
+                    email: result.user.email,
+                    displayName: result.user.displayName,
+                    photoURL: result.user.photoURL
+                }
+
+                axiosSecure.post('users', userInfo)
+                    .then(res => {
+                        console.log('user data has been stored', res.data)
+                        navigate(location.state || '/')
+                    })
             })
             .catch(error => {
             console.log(error)

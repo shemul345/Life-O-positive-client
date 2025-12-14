@@ -68,7 +68,7 @@ const MyDonationRequests = () => {
                 <table className="table table-zebra">
                     {/* head */}
                     <thead>
-                        <tr>
+                        <tr className='text-black'>
                             <th>SL No.</th>
                             <th>Receipent Name</th>
                             <th>Blood Group</th>
