@@ -139,29 +139,39 @@ const Register = () => {
                         ))}
                     </select>
 
-                    <div className="relative mb-2">
+                    {/* Password */}
+                    <div className='relative'>
+                        <input
+                            type={show ? 'text' : 'password'}
+                            className="input w-full mb-2"
+                            {...register('password', { required: true, minLength: 6 })}
+                            placeholder="Password" />
+                        <span
+                            onClick={() => setShow(!show)}
+                            className="absolute right-6 top-3 cursor-pointer z-50 text-gray-500 text-lg">
+                            {show ? <IoEyeOff /> : <FaEye />}
+                        </span>
+                        {errors.password?.type === 'required' && <p className='text-red-500'>Password is required</p>}
+                        {errors.password?.type === 'minLength' && <p className='text-red-500'>Must be 6 characters or longer</p>}
+                    </div>
+
+                    {/* Password */}
+                    <div className='relative'>
                         <input
                             type={show ? 'text' : 'password'}
                             className="input w-full"
-                            placeholder="Password"
-                            {...register('password', { required: true, minLength: 6 })}
-                        />
+                            {...register('confirmPassword', { required: true, minLength: 6 })}
+                            placeholder="Confirm Password" />
                         <span
                             onClick={() => setShow(!show)}
-                            className="absolute right-4 top-3 cursor-pointer"
-                        >
+                            className="absolute right-6 top-3 cursor-pointer z-50 text-gray-500 text-lg">
                             {show ? <IoEyeOff /> : <FaEye />}
                         </span>
+                        {errors.confirmPassword?.type === 'required' && <p className='text-red-500'>Password is required</p>}
+                        {errors.confirmPassword?.type === 'minLength' && <p className='text-red-500'>Must be 6 characters or longer</p>}
                     </div>
 
-                    <input
-                        type={show ? 'text' : 'password'}
-                        className="input w-full mb-3"
-                        placeholder="Confirm Password"
-                        {...register('confirmPassword', { required: true })}
-                    />
-
-                    <button className="btn btn-primary w-full text-white">
+                    <button className="mt-5 btn btn-primary w-full text-white">
                         Register
                     </button>
 

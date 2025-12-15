@@ -1,8 +1,8 @@
 import React from 'react';
-import { FaCreditCard } from 'react-icons/fa';
 import { BiDonateBlood } from "react-icons/bi";
 import { NavLink, Outlet } from 'react-router';
 import Logo from '../../components/Logo/Logo';
+import { FaUsers } from 'react-icons/fa';
 
 const DashboardLayout = () => {
     return (
@@ -47,9 +47,9 @@ const DashboardLayout = () => {
 
 
                         <li>
-                            <NavLink to="/dashboard/payment-history" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Payment History">
-                                <FaCreditCard />
-                                <span className="is-drawer-close:hidden">Payment History</span></NavLink>
+                            <NavLink to="/dashboard/users" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Users">
+                                <FaUsers></FaUsers>
+                                <span className="is-drawer-close:hidden">Users</span></NavLink>
                         </li>
 
 

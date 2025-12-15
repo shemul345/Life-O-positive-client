@@ -85,6 +85,7 @@ const Login = () => {
                             {errors.password?.type === 'required' && <p className='text-red-500'>Password is required</p>}
                             {errors.password?.type === 'minLength' && <p className='text-red-500'>Must be 6 characters or longer</p>}
                         </div>
+                        
                         <div>
                             <a onClick={handleResetPassword} className="link link-hover">Forgot password?</a>
                         </div>
