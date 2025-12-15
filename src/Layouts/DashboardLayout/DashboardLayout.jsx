@@ -3,8 +3,14 @@ import { BiDonateBlood } from "react-icons/bi";
 import { NavLink, Outlet } from 'react-router';
 import Logo from '../../components/Logo/Logo';
 import { FaUsers } from 'react-icons/fa';
+import useRole from '../../hooks/useRole';
+import Loader from '../../components/Loader/Loader';
 
 const DashboardLayout = () => {
+    const { role, isLoading } = useRole();
+    if (isLoading) {
+        return <Loader></Loader>
+    }
     return (
         <div className="drawer lg:drawer-open max-w-7xl mx-auto">
             <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
@@ -46,11 +52,15 @@ const DashboardLayout = () => {
                         </li>
 
 
-                        <li>
-                            <NavLink to="/dashboard/users" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Users">
-                                <FaUsers></FaUsers>
-                                <span className="is-drawer-close:hidden">Users</span></NavLink>
-                        </li>
+                        {
+                            role === 'admin' && <>
+                                <li>
+                                    <NavLink to="/dashboard/users" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Users">
+                                        <FaUsers></FaUsers>
+                                        <span className="is-drawer-close:hidden">Users</span></NavLink>
+                                </li>
+                            </>
+                        }
 
 
 
