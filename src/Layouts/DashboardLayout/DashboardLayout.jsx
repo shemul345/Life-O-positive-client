@@ -7,8 +7,8 @@ import useRole from '../../hooks/useRole';
 import Loader from '../../components/Loader/Loader';
 
 const DashboardLayout = () => {
-    const { role, isLoading } = useRole();
-    if (isLoading) {
+    const { role, roleLoading } = useRole();
+    if (roleLoading) {
         return <Loader></Loader>
     }
     return (

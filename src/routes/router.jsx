@@ -10,6 +10,7 @@ import DashboardLayout from "../Layouts/DashboardLayout/DashboardLayout";
 import MyDonationRequests from "../Pages/Dashboard/MyDonationRequests/MyDonationRequests";
 import DonationRequest from "../Pages/Home/DonationRequest/DonationRequest";
 import Users from "../Pages/Dashboard/Users/Users";
+import AdminRoute from "./AdminRoute";
 
 export const router = createBrowserRouter([
     {
@@ -56,7 +57,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'users',
-                Component:Users
+                element:<AdminRoute><Users></Users></AdminRoute>
             }
         ]
     }
