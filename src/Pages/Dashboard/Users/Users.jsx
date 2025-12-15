@@ -5,17 +5,53 @@ import { FaTrashAlt } from 'react-icons/fa';
 import { TbShieldOff } from "react-icons/tb";
 import { MdRemoveDone, MdVolunteerActivism } from 'react-icons/md';
 import { RiAdminFill } from 'react-icons/ri';
+import Swal from 'sweetalert2';
 
 const Users = () => {
     const axiosSecure = useAxiosSecure();
 
-    const { data: users = [] } = useQuery({
+    const { refetch, data: users = [] } = useQuery({
         queryKey: ['users'],
         queryFn: async () => {
             const res = await axiosSecure.get(`/users`)
             return res.data;
         }
     })
+
+    const handleMakeAdmin = (user) => {
+        const roleInfo = { role: 'admin' }
+        axiosSecure.patch(`/users/${user._id}`, roleInfo)
+            .then(res => {
+                console.log(res.data)
+                if (res.data.modifiedCount) {
+                    refetch()
+                    Swal.fire({
+                        title: "Congratulations!",
+                        text: `${user.displayName} marked as an Admin`,
+                        icon: "success",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+            })
+    }
+    const handleRemoveDonor = (user) => {
+        const roleInfo = { role: 'donor' }
+        axiosSecure.patch(`/users/${user._id}`, roleInfo)
+            .then(res => {
+                console.log(res.data)
+                if (res.data.modifiedCount) {
+                    refetch()
+                    Swal.fire({
+                        title: "Congratulations!",
+                        text: `${user.displayName} remove from Admin`,
+                        icon: "success",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+            })
+    }
     return (
         <div>
             <h1 className='text-2xl font-bold ml-10 mb-5'>All Users({users.length})</h1>
@@ -46,7 +82,7 @@ const Users = () => {
                                             </div>
                                         </div>
                                         <div>
-                                            <div className="font-bold">{u.name}</div>
+                                            <div className="font-bold">{u.displayName}</div>
                                             <div className="text-sm opacity-50">Bangladesh</div>
                                         </div>
                                     </div>
@@ -58,23 +94,23 @@ const Users = () => {
                                         view
                                     </button>
                                     {
-                                        u.role === 'admin' ? <button className='btn btn-square hover:bg-primary hover:text-white mx-2 tooltip'
-                                            data-tip='Remove Admin'>
+                                        u.role === 'admin' ? <button
+                                            onClick={() => handleRemoveDonor(u)}
+                                            className='btn btn-square bg-red-400 text-white mx-2'>
                                             <TbShieldOff />
-                                        </button> : 
-                                            <button className='btn btn-square hover:bg-primary hover:text-white mx-2 tooltip'
-                                                data-tip='Make Admin'>
+                                        </button> :
+                                            <button
+                                                onClick={() => handleMakeAdmin(u)}
+                                                className='btn btn-square bg-green-500 text-white mx-2'>
                                                 <RiAdminFill />
                                             </button>
                                     }
 
                                     {
-                                        u.role === 'volunteer' ? <button className='btn btn-square hover:bg-primary hover:text-white mx-2 tooltip'
-                                            data-tip='Remove Volunteer'>
+                                        u.role === 'volunteer' ? <button className='btn btn-square hover:bg-primary hover:text-white mx-2'>
                                             <MdRemoveDone />
                                         </button> :
-                                            <button className='btn btn-square hover:bg-primary hover:text-white mx-2 tooltip'
-                                                data-tip='Make Volunteer'>
+                                            <button className='btn btn-square hover:bg-primary hover:text-white mx-2'>
                                                 <MdVolunteerActivism />
                                             </button>
                                     }

@@ -62,17 +62,18 @@ const Register = () => {
             await registerUser(data.email, data.password);
 
             await updateUserProfile({
-                displayName: data.name,
+                displayName: data.displayName,
                 photoURL
             });
 
             const userInfo = {
-                name: data.name,
+                displayName: data.displayName,
                 email: data.email,
                 photoURL,
                 district: data.district,
                 upazila: data.upazila
             };
+            console.log(data.district)
 
             await axiosSecure.post('/users', userInfo);
 
@@ -97,9 +98,9 @@ const Register = () => {
                     <input
                         className="input w-full mb-2"
                         placeholder="Name"
-                        {...register('name', { required: true })}
+                        {...register('displayName', { required: true })}
                     />
-                    {errors.name && <p className="text-red-500">Name required</p>}
+                    {errors.displayName && <p className="text-red-500">Name required</p>}
 
                     <input
                         type="file"

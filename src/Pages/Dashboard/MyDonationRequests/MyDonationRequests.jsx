@@ -41,7 +41,8 @@ const MyDonationRequests = () => {
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
             confirmButtonText: "Yes, delete it!"
-        }).then((result) => {
+        })
+            .then((result) => {
             if (result.isConfirmed) {
 
                 axiosSecure.delete(`/donation-requests/${id}`)
@@ -52,7 +53,9 @@ const MyDonationRequests = () => {
                             Swal.fire({
                                 title: "Deleted!",
                                 text: "Your donation request has been deleted.",
-                                icon: "success"
+                                icon: "success",
+                                timer: 2000,
+                                showConfirmButton:false
                             });
                         }
                     })
