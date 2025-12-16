@@ -5,6 +5,7 @@ import Logo from '../../components/Logo/Logo';
 import { FaUsers } from 'react-icons/fa';
 import useRole from '../../hooks/useRole';
 import Loader from '../../components/Loader/Loader';
+import { MdBloodtype } from 'react-icons/md';
 
 const DashboardLayout = () => {
     const { role, roleLoading } = useRole();
@@ -46,9 +47,16 @@ const DashboardLayout = () => {
 
 
                         <li>
-                            <NavLink to="/dashboard/my-donation-requests" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="My Donation Requests">
+                            <NavLink to="/dashboard/my-donation-requests" className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                                data-tip="My Donation Requests">
                                 <BiDonateBlood className='text-lg' />
                                 <span className="is-drawer-close:hidden">My Donation Requests</span></NavLink>
+                        </li>
+                        <li>
+                            <NavLink to="/dashboard/all-blood-donation-requests" className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                                data-tip="All Blood Donation Requests">
+                                <MdBloodtype className='text-lg' />
+                                <span className="is-drawer-close:hidden">All Blood Donation Requests</span></NavLink>
                         </li>
 
 

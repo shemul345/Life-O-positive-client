@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import useAuth from '../../../hooks/useAuth';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from '@tanstack/react-query';
 import Loader from '../../../components/Loader/Loader';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import Swal from 'sweetalert2';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 
-const MyDonationRequests = () => {
-    const { user, loading } = useAuth();
+const AllBloodDonationRequests = () => {
+    const { loading } = useAuth();
     const axiosSecure = useAxiosSecure();
 
     const [selectedRequest, setSelectedRequest] = useState(null);
@@ -19,83 +19,81 @@ const MyDonationRequests = () => {
         cancelled: 'bg-red-700',
     };
 
-    const {data: requests=[], refetch } = useQuery({
-        queryKey: ['myDonationRequests', user?.email],
+    const { data: requests = [], refetch, isLoading } = useQuery({
+        queryKey: ['allBloodDonationRequests'],
         queryFn: async () => {
-            const res = await axiosSecure.get(`/donation-requests?email=${user?.email}`)
-            return res.data
+            const res = await axiosSecure.get('/all-blood-donation-requests');
+            return res.data;
         }
     });
 
-    if (loading) {
-        return <Loader></Loader>
+    if (loading || isLoading) {
+        return <Loader />;
     }
-    // console.log(requests)
 
     const handleDeleteDonationRequest = (id) => {
-        // console.log(id)
-
         Swal.fire({
-            title: "Are you sure?",
-            text: "You have deleted this blood donation request!",
-            icon: "warning",
+            title: 'Are you sure?',
+            text: 'You want to delete this blood donation request!',
+            icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!"
-        })
-            .then((result) => {
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
             if (result.isConfirmed) {
-
-                axiosSecure.delete(`/donation-requests/${id}`)
-                    .then(res => {
-                        console.log(res.data)
+                axiosSecure
+                    .delete(`/all-blood-donation-requests/${id}`)
+                    .then((res) => {
                         if (res.data.deletedCount) {
                             refetch();
                             Swal.fire({
-                                title: "Deleted!",
-                                text: "Your donation request has been deleted.",
-                                icon: "success",
+                                title: 'Deleted!',
+                                text: 'Donation request has been deleted.',
+                                icon: 'success',
                                 timer: 2000,
-                                showConfirmButton:false
+                                showConfirmButton: false
                             });
                         }
-                    })
+                    });
             }
         });
-    }
+    };
 
     return (
         <div>
-            <h1 className='text-2xl font-bold ml-10 mb-5'>My donation requests</h1>
+            <h1 className="text-2xl font-bold ml-10 mb-5">
+                All Blood Donation Requests
+            </h1>
 
             <div className="overflow-x-auto">
                 <table className="table table-zebra">
-                    {/* head */}
                     <thead>
-                        <tr className='text-black'>
-                            <th>SL No.</th>
-                            <th>Receipent Name</th>
+                        <tr className="text-black">
+                            <th>SL</th>
+                            <th>Recipient Name</th>
                             <th>Blood Group</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
+
                     <tbody>
-                        {
-                            requests.map((request, index) => <tr key={index}>
-                            <td>{ index+1}</td>
-                            <td>{request.recipientName}</td>
+                        {requests.map((request, index) => (
+                            <tr key={request._id}>
+                                <td>{index + 1}</td>
+                                <td>{request.recipientName}</td>
                                 <td>{request.bloodGroup}</td>
                                 <td>
                                     <span
-                                        className={`px-3 py-1 rounded text-white text-sm capitalize ${statusBgMap[request.status] || 'bg-gray-600'
+                                        className={`px-3 py-1 rounded text-white text-sm capitalize ${statusBgMap[request.status] ||
+                                            'bg-gray-600'
                                             }`}
                                     >
                                         {request.status}
-                                        </span>
+                                    </span>
                                 </td>
-                                <td>
+                                <td className="flex gap-2">
                                     <button
                                         className="btn"
                                         onClick={() => {
@@ -109,21 +107,28 @@ const MyDonationRequests = () => {
                                     >
                                         View
                                     </button>
-                                    <button className='btn btn-square hover:bg-primary hover:text-white mx-2'>
+
+                                    <button className="btn btn-square hover:bg-primary hover:text-white">
                                         <FaEdit />
                                     </button>
+
                                     <button
-                                        onClick={() => handleDeleteDonationRequest(request._id)}
-                                        className='btn btn-square hover:bg-primary hover:text-white'>
+                                        onClick={() =>
+                                            handleDeleteDonationRequest(
+                                                request._id
+                                            )
+                                        }
+                                        className="btn btn-square hover:bg-primary hover:text-white"
+                                    >
                                         <FaTrashAlt />
                                     </button>
                                 </td>
-                        </tr>
-                       )}
-                        
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
+
             {/* ===== SINGLE DYNAMIC MODAL ===== */}
             <dialog id="view_request_modal" className="modal">
                 <div className="modal-box w-11/12 max-w-5xl">
@@ -207,4 +212,4 @@ const MyDonationRequests = () => {
     );
 };
 
-export default MyDonationRequests;
+export default AllBloodDonationRequests;

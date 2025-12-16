@@ -38,12 +38,17 @@ const DonationRequest = () => {
 
     const onSubmit = async (data) => {
         try {
+            const selectedDistrictObj = districts.find(d => String(d.id) === String(data.recipientDistrict));
+            const selectedUpazilaObj = upazilas.find(u => String(u.id) === String(data.recipientUpazila));
+
+
             const donationRequest = {
                 requesterName: user.displayName,
                 requesterEmail: user.email,
                 recipientName: data.recipientName,
-                recipientDistrict: data.recipientDistrict,
-                recipientUpazila: data.recipientUpazila,
+                recipientContactNo: data.recipientContact,
+                recipientDistrict: selectedDistrictObj?.name || '',
+                recipientUpazila: selectedUpazilaObj?.name || '',
                 hospitalName: data.hospitalName,
                 fullAddress: data.fullAddress,
                 bloodGroup: data.bloodGroup,
@@ -102,6 +107,17 @@ const DonationRequest = () => {
                         placeholder='Recipient name'
                     />
                     {errors.recipientName && <p className="text-red-500">Recipient name is required</p>}
+                </div>
+                {/* Recipient Contact No. */}
+                <div>
+                    <label className="block mb-1 font-medium">Recipient Contact</label>
+                    <input
+                        type="number"
+                        {...register('recipientContact', { required: true })}
+                        className="input w-full"
+                        placeholder='01560049364'
+                    />
+                    {errors.recipientContact && <p className="text-red-500">Recipient Contact Number is required</p>}
                 </div>
 
                 {/* Recipient District */}

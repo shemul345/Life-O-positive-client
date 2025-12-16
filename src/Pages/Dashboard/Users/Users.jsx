@@ -32,7 +32,7 @@ const Users = () => {
         })
             .then(result => {
                 if (result.isConfirmed) {
-                    axiosSecure.patch(`/users/${user._id}`, roleInfo)
+                    axiosSecure.patch(`/users/${user._id}/role`, roleInfo)
                         .then(res => {
                             console.log(res.data)
                             if (res.data.modifiedCount) {
@@ -61,11 +61,11 @@ const Users = () => {
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, Maked Admin"
+            confirmButtonText: "Yes, Maked Volunteer"
         })
             .then(result => {
                 if (result.isConfirmed) {
-                    axiosSecure.patch(`/users/${user._id}`, roleInfo)
+                    axiosSecure.patch(`/users/${user._id}/role`, roleInfo)
                         .then(res => {
                             console.log(res.data)
                             if (res.data.modifiedCount) {
@@ -98,7 +98,7 @@ const Users = () => {
         })
             .then(result => {
                 if (result.isConfirmed) {
-                    axiosSecure.patch(`/users/${user._id}`, roleInfo)
+                    axiosSecure.patch(`/users/${user._id}/role`, roleInfo)
                         .then(res => {
                             console.log(res.data)
                             if (res.data.modifiedCount) {
