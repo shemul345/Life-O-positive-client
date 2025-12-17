@@ -21,7 +21,6 @@ export const router = createBrowserRouter([
             {
                 index: true,
                 Component: Home,
-                loader: () => fetch('/CollectonArea.json').then(res => res.json())
             },
             {
                 path: "collection-area",
@@ -64,7 +63,7 @@ export const router = createBrowserRouter([
             {
                 path: 'all-blood-donation-requests',
                 Component:AllBloodDonationRequests
-            }
+            },
         ]
     }
 ]);

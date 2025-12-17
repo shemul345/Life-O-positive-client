@@ -1,19 +1,17 @@
 import React from 'react';
 import Banner from '../Banner/Banner';
 import HelpWay from '../HelpWay/HelpWay';
-import SearchDonor from '../SearchDonor/SearchDonor';
-import { useLoaderData } from 'react-router';
 import DonorPortalFeatures from '../DonorPortalFeatures/DonorPortalFeatures';
 import Mission from '../Mission/MIssion';
+import SearchPage from '../SearchPage/SearchPage';
 
 
 const Home = () => {
-    const area = useLoaderData();
     return (
         <div>
             <Banner></Banner>
             <HelpWay></HelpWay>
-            <SearchDonor area={area}></SearchDonor>
+            <SearchPage></SearchPage>
             <DonorPortalFeatures></DonorPortalFeatures>
             <Mission></Mission>
         </div>

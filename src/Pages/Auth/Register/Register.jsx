@@ -7,23 +7,21 @@ import useAuth from '../../../hooks/useAuth';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
-import SocialLogin from '../../SocialLogin/SocialLogin';
 
 const Register = () => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
-
     const [show, setShow] = useState(false);
     const [districts, setDistricts] = useState([]);
     const [upazilas, setUpazilas] = useState([]);
 
-    const selectedDistrict = watch('district');
+    const selectedDistrictId = watch('district'); // এটি ID পাবে (যেমন: "1")
 
     const { registerUser, updateUserProfile } = useAuth();
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
     const location = useLocation();
 
-    /* ---------- LOAD PHPMyAdmin JSON ---------- */
+    /* ---------- জেলা ও উপজেলা ডাটা লোড করা ---------- */
     useEffect(() => {
         fetch('/data/districts.json')
             .then(res => res.json())
@@ -40,15 +38,23 @@ const Register = () => {
             });
     }, []);
 
+    // ডিস্ট্রিক্ট ID এর ওপর ভিত্তি করে উপজেলা ফিল্টার
     const filteredUpazilas = upazilas.filter(
-        u => String(u.district_id) === String(selectedDistrict)
+        u => String(u.district_id) === String(selectedDistrictId)
     );
 
-    /* ---------- SUBMIT ---------- */
+    /* ---------- রেজিস্ট্রেশন সাবমিট ---------- */
     const handleRegistration = async (data) => {
         try {
-            const imageFile = data.photo[0];
+            // ID থেকে নাম খুঁজে বের করা (সার্চ রেজাল্ট ঠিক করার জন্য)
+            const districtObj = districts.find(d => String(d.id) === String(data.district));
+            const upazilaObj = upazilas.find(u => String(u.id) === String(data.upazila));
 
+            const districtName = districtObj ? districtObj.name : "";
+            const upazilaName = upazilaObj ? upazilaObj.name : "";
+
+            // ১. ইমেজ আপলোড (ImgBB)
+            const imageFile = data.photo[0];
             const formData = new FormData();
             formData.append('image', imageFile);
 
@@ -59,132 +65,158 @@ const Register = () => {
 
             const photoURL = imgRes.data.data.url;
 
+            // ২. ফায়ারবেস অথেন্টিকেশন
             await registerUser(data.email, data.password);
 
+            // ৩. ফায়ারবেস প্রোফাইল আপডেট
             await updateUserProfile({
                 displayName: data.displayName,
                 photoURL
             });
 
+            // ৪. ডাটাবেজে ইউজার ইনফো সেভ (আইডির বদলে নাম পাঠানো হচ্ছে)
             const userInfo = {
-                displayName: data.displayName,
+                name: data.displayName,
                 email: data.email,
-                photoURL,
-                district: data.district,
-                upazila: data.upazila
+                avatar: photoURL,
+                bloodGroup: data.bloodGroup,
+                district: districtName, // "Comilla"
+                upazila: upazilaName,   // "Debidwar"
+                status: 'active',
+                role: 'donor'
             };
-            console.log(data.district)
 
-            await axiosSecure.post('/users', userInfo);
+            const dbRes = await axiosSecure.post('/users', userInfo);
 
-            toast.success('Registration successful');
-            navigate(location.state || '/');
+            if (dbRes.data.insertedId || dbRes.data.message === 'success') {
+                toast.success('Registration successful');
+                navigate(location.state || '/');
+            }
 
         } catch (err) {
             console.error(err);
-            toast.error('Registration failed');
+            toast.error(err.message || 'Registration failed');
         }
     };
 
     return (
-        <div className="card bg-base-100 w-full max-w-lg shadow-2xl">
-            <h1 className="text-4xl font-extrabold text-center mt-5">
-                Create an Account
-            </h1>
+        <div className="flex justify-center items-center min-h-screen bg-gray-100 py-10">
+            <div className="card bg-base-100 w-full max-w-lg shadow-2xl">
+                <h1 className="text-4xl font-extrabold text-center mt-8">Create an Account</h1>
 
-            <div className="card-body">
-                <form onSubmit={handleSubmit(handleRegistration)}>
+                <div className="card-body">
+                    <form onSubmit={handleSubmit(handleRegistration)} className="space-y-4">
 
-                    <input
-                        className="input w-full mb-2"
-                        placeholder="Name"
-                        {...register('displayName', { required: true })}
-                    />
-                    {errors.displayName && <p className="text-red-500">Name required</p>}
+                        {/* Name */}
+                        <div>
+                            <input
+                                className="input input-bordered w-full"
+                                placeholder="Full Name"
+                                {...register('displayName', { required: "Name is required" })}
+                            />
+                            {errors.displayName && <p className="text-red-500 text-sm">{errors.displayName.message}</p>}
+                        </div>
 
-                    <input
-                        type="file"
-                        className="file-input w-full mb-2"
-                        {...register('photo', { required: true })}
-                    />
+                        {/* Photo */}
+                        <div>
+                            <label className="label text-sm font-semibold">Profile Picture</label>
+                            <input
+                                type="file"
+                                className="file-input file-input-bordered w-full"
+                                {...register('photo', { required: "Photo is required" })}
+                            />
+                        </div>
 
-                    <input
-                        type="email"
-                        className="input w-full mb-2"
-                        placeholder="Email"
-                        {...register('email', { required: true })}
-                    />
+                        {/* Email */}
+                        <div>
+                            <input
+                                type="email"
+                                className="input input-bordered w-full"
+                                placeholder="Email Address"
+                                {...register('email', { required: "Email is required" })}
+                            />
+                        </div>
 
-                    <select
-                        className="input w-full mb-2"
-                        {...register('district', { required: true })}
-                    >
-                        <option value="">-- Select District --</option>
-                        {districts.map(d => (
-                            <option key={d.id} value={d.id}>
-                                {d.name} - {d.bn_name}
-                            </option>
-                        ))}
-                    </select>
+                        {/* Blood Group */}
+                        <div>
+                            <select
+                                className="select select-bordered w-full"
+                                {...register('bloodGroup', { required: "Blood group is required" })}
+                            >
+                                <option value="">-- Select Blood Group --</option>
+                                {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(group => (
+                                    <option key={group} value={group}>{group}</option>
+                                ))}
+                            </select>
+                        </div>
 
-                    <select
-                        className="input w-full mb-2"
-                        {...register('upazila', { required: true })}
-                        disabled={!selectedDistrict}
-                    >
-                        <option value="">-- Select Upazila --</option>
-                        {filteredUpazilas.map(u => (
-                            <option key={u.id} value={u.id}>
-                                {u.name} - {u.bn_name}
-                            </option>
-                        ))}
-                    </select>
+                        {/* District */}
+                        <div>
+                            <select
+                                className="select select-bordered w-full"
+                                {...register('district', { required: "District is required" })}
+                            >
+                                <option value="">-- Select District --</option>
+                                {districts.map(d => (
+                                    <option key={d.id} value={d.id}>{d.name}</option>
+                                ))}
+                            </select>
+                        </div>
 
-                    {/* Password */}
-                    <div className='relative'>
-                        <input
-                            type={show ? 'text' : 'password'}
-                            className="input w-full mb-2"
-                            {...register('password', { required: true, minLength: 6 })}
-                            placeholder="Password" />
-                        <span
-                            onClick={() => setShow(!show)}
-                            className="absolute right-6 top-3 cursor-pointer z-50 text-gray-500 text-lg">
-                            {show ? <IoEyeOff /> : <FaEye />}
-                        </span>
-                        {errors.password?.type === 'required' && <p className='text-red-500'>Password is required</p>}
-                        {errors.password?.type === 'minLength' && <p className='text-red-500'>Must be 6 characters or longer</p>}
-                    </div>
+                        {/* Upazila */}
+                        <div>
+                            <select
+                                className="select select-bordered w-full"
+                                {...register('upazila', { required: "Upazila is required" })}
+                                disabled={!selectedDistrictId}
+                            >
+                                <option value="">-- Select Upazila --</option>
+                                {filteredUpazilas.map(u => (
+                                    <option key={u.id} value={u.id}>{u.name}</option>
+                                ))}
+                            </select>
+                        </div>
 
-                    {/* Password */}
-                    <div className='relative'>
-                        <input
-                            type={show ? 'text' : 'password'}
-                            className="input w-full"
-                            {...register('confirmPassword', { required: true, minLength: 6 })}
-                            placeholder="Confirm Password" />
-                        <span
-                            onClick={() => setShow(!show)}
-                            className="absolute right-6 top-3 cursor-pointer z-50 text-gray-500 text-lg">
-                            {show ? <IoEyeOff /> : <FaEye />}
-                        </span>
-                        {errors.confirmPassword?.type === 'required' && <p className='text-red-500'>Password is required</p>}
-                        {errors.confirmPassword?.type === 'minLength' && <p className='text-red-500'>Must be 6 characters or longer</p>}
-                    </div>
+                        {/* Password */}
+                        <div className='relative'>
+                            <input
+                                type={show ? 'text' : 'password'}
+                                className="input input-bordered w-full"
+                                {...register('password', { required: true, minLength: 6 })}
+                                placeholder="Password" />
+                            <span
+                                onClick={() => setShow(!show)}
+                                className="absolute right-4 top-3 cursor-pointer text-gray-500 text-xl">
+                                {show ? <IoEyeOff /> : <FaEye />}
+                            </span>
+                            {errors.password && <p className='text-red-500 text-sm'>Min 6 characters required</p>}
+                        </div>
 
-                    <button className="mt-5 btn btn-primary w-full text-white">
-                        Register
-                    </button>
+                        {/* Confirm Password */}
+                        <div className='relative'>
+                            <input
+                                type={show ? 'text' : 'password'}
+                                className="input input-bordered w-full"
+                                {...register('confirmPassword', {
+                                    required: true,
+                                    validate: (value) => value === watch('password') || "Passwords do not match"
+                                })}
+                                placeholder="Confirm Password" />
+                            {errors.confirmPassword && <p className='text-red-500 text-sm'>{errors.confirmPassword.message}</p>}
+                        </div>
 
-                    <p className="mt-2">
-                        Already have an account?
-                        <Link to="/login" className="text-red-500 font-bold ml-1">
-                            Login
-                        </Link>
-                    </p>
-                </form>
+                        <button className="btn btn-error w-full text-white font-bold text-lg mt-4">
+                            Register
+                        </button>
 
-                <SocialLogin />
+                        <p className="text-center mt-4">
+                            Already have an account?
+                            <Link to="/login" className="text-red-600 font-bold ml-1 hover:underline">
+                                Login
+                            </Link>
+                        </p>
+                    </form>
+                </div>
             </div>
         </div>
     );

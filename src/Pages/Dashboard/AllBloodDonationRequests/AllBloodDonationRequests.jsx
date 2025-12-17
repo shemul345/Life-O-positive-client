@@ -19,7 +19,7 @@ const AllBloodDonationRequests = () => {
         cancelled: 'bg-red-700',
     };
 
-    const { data: requests = [], refetch, isLoading } = useQuery({
+    const { data: requests = [], isLoading } = useQuery({
         queryKey: ['allBloodDonationRequests'],
         queryFn: async () => {
             const res = await axiosSecure.get('/all-blood-donation-requests');
@@ -30,35 +30,6 @@ const AllBloodDonationRequests = () => {
     if (loading || isLoading) {
         return <Loader />;
     }
-
-    const handleDeleteDonationRequest = (id) => {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'You want to delete this blood donation request!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                axiosSecure
-                    .delete(`/all-blood-donation-requests/${id}`)
-                    .then((res) => {
-                        if (res.data.deletedCount) {
-                            refetch();
-                            Swal.fire({
-                                title: 'Deleted!',
-                                text: 'Donation request has been deleted.',
-                                icon: 'success',
-                                timer: 2000,
-                                showConfirmButton: false
-                            });
-                        }
-                    });
-            }
-        });
-    };
 
     return (
         <div>
@@ -110,17 +81,6 @@ const AllBloodDonationRequests = () => {
 
                                     <button className="btn btn-square hover:bg-primary hover:text-white">
                                         <FaEdit />
-                                    </button>
-
-                                    <button
-                                        onClick={() =>
-                                            handleDeleteDonationRequest(
-                                                request._id
-                                            )
-                                        }
-                                        className="btn btn-square hover:bg-primary hover:text-white"
-                                    >
-                                        <FaTrashAlt />
                                     </button>
                                 </td>
                             </tr>

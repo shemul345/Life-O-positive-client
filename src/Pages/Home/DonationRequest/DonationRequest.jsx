@@ -17,24 +17,24 @@ const DonationRequest = () => {
     const selectedDistrict = watch('recipientDistrict');
 
     useEffect(() => {
-            fetch('/data/districts.json')
-                .then(res => res.json())
-                .then(json => {
-                    const table = json.find(item => item.type === 'table' && item.name === 'districts');
-                    setDistricts(table?.data || []);
-                });
-    
-            fetch('/data/upazilas.json')
-                .then(res => res.json())
-                .then(json => {
-                    const table = json.find(item => item.type === 'table' && item.name === 'upazilas');
-                    setUpazilas(table?.data || []);
-                });
-        }, []);
-    
-        const filteredUpazilas = upazilas.filter(
-            u => String(u.district_id) === String(selectedDistrict)
-        );
+        fetch('/data/districts.json')
+            .then(res => res.json())
+            .then(json => {
+                const table = json.find(item => item.type === 'table' && item.name === 'districts');
+                setDistricts(table?.data || []);
+            });
+
+        fetch('/data/upazilas.json')
+            .then(res => res.json())
+            .then(json => {
+                const table = json.find(item => item.type === 'table' && item.name === 'upazilas');
+                setUpazilas(table?.data || []);
+            });
+    }, []);
+
+    const filteredUpazilas = upazilas.filter(
+        u => String(u.district_id) === String(selectedDistrict)
+    );
 
     const onSubmit = async (data) => {
         try {

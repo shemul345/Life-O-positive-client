@@ -19,7 +19,7 @@ const MyDonationRequests = () => {
         cancelled: 'bg-red-700',
     };
 
-    const {data: requests=[], refetch } = useQuery({
+    const { data: requests = [], refetch } = useQuery({
         queryKey: ['myDonationRequests', user?.email],
         queryFn: async () => {
             const res = await axiosSecure.get(`/donation-requests?email=${user?.email}`)
@@ -45,24 +45,24 @@ const MyDonationRequests = () => {
             confirmButtonText: "Yes, delete it!"
         })
             .then((result) => {
-            if (result.isConfirmed) {
+                if (result.isConfirmed) {
 
-                axiosSecure.delete(`/donation-requests/${id}`)
-                    .then(res => {
-                        console.log(res.data)
-                        if (res.data.deletedCount) {
-                            refetch();
-                            Swal.fire({
-                                title: "Deleted!",
-                                text: "Your donation request has been deleted.",
-                                icon: "success",
-                                timer: 2000,
-                                showConfirmButton:false
-                            });
-                        }
-                    })
-            }
-        });
+                    axiosSecure.delete(`/donation-requests/${id}`)
+                        .then(res => {
+                            console.log(res.data)
+                            if (res.data.deletedCount) {
+                                refetch();
+                                Swal.fire({
+                                    title: "Deleted!",
+                                    text: "Your donation request has been deleted.",
+                                    icon: "success",
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        })
+                }
+            });
     }
 
     return (
@@ -84,8 +84,8 @@ const MyDonationRequests = () => {
                     <tbody>
                         {
                             requests.map((request, index) => <tr key={index}>
-                            <td>{ index+1}</td>
-                            <td>{request.recipientName}</td>
+                                <td>{index + 1}</td>
+                                <td>{request.recipientName}</td>
                                 <td>{request.bloodGroup}</td>
                                 <td>
                                     <span
@@ -93,7 +93,7 @@ const MyDonationRequests = () => {
                                             }`}
                                     >
                                         {request.status}
-                                        </span>
+                                    </span>
                                 </td>
                                 <td>
                                     <button
@@ -118,9 +118,9 @@ const MyDonationRequests = () => {
                                         <FaTrashAlt />
                                     </button>
                                 </td>
-                        </tr>
-                       )}
-                        
+                            </tr>
+                            )}
+
                     </tbody>
                 </table>
             </div>
