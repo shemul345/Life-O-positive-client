@@ -17,7 +17,6 @@ const SearchPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const donorsPerPage = 6;
 
-    // ১. পাবলিক ফোল্ডার থেকে জেলা এবং উপজেলার ডাটা লোড করা
     useEffect(() => {
         fetch('/data/districts.json')
             .then(res => res.json())
@@ -34,7 +33,6 @@ const SearchPage = () => {
             });
     }, []);
 
-    // ২. জেলা পরিবর্তন হলে উপজেলা ফিল্টার করা
     const handleDistrictChange = (e) => {
         const districtName = e.target.value;
         const selectedDistrict = districts.find(d => d.name === districtName);
@@ -46,11 +44,10 @@ const SearchPage = () => {
         }
     };
 
-    // ৩. সার্চ হ্যান্ডলার
     const handleSearch = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setCurrentPage(1); // নতুন সার্চে প্রথম পেজে ফিরে যাওয়া
+        setCurrentPage(1);
 
         const form = e.target;
         const bloodGroup = form.bloodGroup.value;
@@ -68,7 +65,7 @@ const SearchPage = () => {
         }
     };
 
-    // ৪. Pagination Logic
+    // Pagination Logic
     const indexOfLastDonor = currentPage * donorsPerPage;
     const indexOfFirstDonor = indexOfLastDonor - donorsPerPage;
     const currentDonors = donors.slice(indexOfFirstDonor, indexOfLastDonor);
@@ -80,7 +77,7 @@ const SearchPage = () => {
         <div className="min-h-screen bg-gray-50 py-12 px-4">
             <div className="max-w-6xl mx-auto">
 
-                {/* সার্চ ফর্ম */}
+                {/* Search form */}
                 <div className="bg-white p-8 rounded-2xl shadow-sm mb-10 border border-red-100">
                     <h2 className="text-3xl font-bold text-center text-gray-800 mb-8 flex items-center justify-center gap-3">
                         <Droplets className="text-red-500" size={32} /> Search for Blood Donors
@@ -114,7 +111,7 @@ const SearchPage = () => {
                     </form>
                 </div>
 
-                {/* রেজাল্ট সেকশন */}
+                {/* result section */}
                 {loading ? (
                     <div className="text-center py-10">
                         <div className="animate-spin inline-block w-10 h-10 border-4 border-red-500 border-t-transparent rounded-full"></div>
@@ -187,7 +184,7 @@ const SearchPage = () => {
                     </>
                 )}
 
-                {/* ইনিশিয়াল স্টেট */}
+                {/* initial state */}
                 {!searched && !loading && (
                     <div className="text-center py-24 bg-white rounded-3xl shadow-sm border border-red-50">
                         <SearchIcon size={80} className="mx-auto text-red-100 mb-4" />

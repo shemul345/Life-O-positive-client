@@ -14,14 +14,13 @@ const Register = () => {
     const [districts, setDistricts] = useState([]);
     const [upazilas, setUpazilas] = useState([]);
 
-    const selectedDistrictId = watch('district'); // এটি ID পাবে (যেমন: "1")
+    const selectedDistrictId = watch('district');
 
     const { registerUser, updateUserProfile } = useAuth();
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
     const location = useLocation();
 
-    /* ---------- জেলা ও উপজেলা ডাটা লোড করা ---------- */
     useEffect(() => {
         fetch('/data/districts.json')
             .then(res => res.json())
@@ -38,22 +37,19 @@ const Register = () => {
             });
     }, []);
 
-    // ডিস্ট্রিক্ট ID এর ওপর ভিত্তি করে উপজেলা ফিল্টার
     const filteredUpazilas = upazilas.filter(
         u => String(u.district_id) === String(selectedDistrictId)
     );
 
-    /* ---------- রেজিস্ট্রেশন সাবমিট ---------- */
     const handleRegistration = async (data) => {
         try {
-            // ID থেকে নাম খুঁজে বের করা (সার্চ রেজাল্ট ঠিক করার জন্য)
             const districtObj = districts.find(d => String(d.id) === String(data.district));
             const upazilaObj = upazilas.find(u => String(u.id) === String(data.upazila));
 
             const districtName = districtObj ? districtObj.name : "";
             const upazilaName = upazilaObj ? upazilaObj.name : "";
 
-            // ১. ইমেজ আপলোড (ImgBB)
+        //    image upload to ImgBB
             const imageFile = data.photo[0];
             const formData = new FormData();
             formData.append('image', imageFile);
@@ -65,23 +61,20 @@ const Register = () => {
 
             const photoURL = imgRes.data.data.url;
 
-            // ২. ফায়ারবেস অথেন্টিকেশন
             await registerUser(data.email, data.password);
-
-            // ৩. ফায়ারবেস প্রোফাইল আপডেট
+            
             await updateUserProfile({
                 displayName: data.displayName,
                 photoURL
             });
 
-            // ৪. ডাটাবেজে ইউজার ইনফো সেভ (আইডির বদলে নাম পাঠানো হচ্ছে)
             const userInfo = {
                 name: data.displayName,
                 email: data.email,
                 avatar: photoURL,
                 bloodGroup: data.bloodGroup,
-                district: districtName, // "Comilla"
-                upazila: upazilaName,   // "Debidwar"
+                district: districtName,
+                upazila: upazilaName, 
                 status: 'active',
                 role: 'donor'
             };
