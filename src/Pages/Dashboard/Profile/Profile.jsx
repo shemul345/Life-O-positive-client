@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import useAuth from '../../hooks/useAuth';
-import useAxiosSecure from '../../hooks/useAxiosSecure';
 import { Edit3, Save, X } from 'lucide-react';
 import Swal from 'sweetalert2';
+import useAuth from '../../../hooks/useAuth';
+import useAxiosSecure from '../../../hooks/useAxiosSecure';
 
 const Profile = () => {
     const { user } = useAuth();
