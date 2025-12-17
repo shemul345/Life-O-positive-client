@@ -82,7 +82,7 @@ const UserHome = () => {
                         <p className="text-gray-500">Keeping your information updated helps us reach you faster in emergencies.</p>
                     </div>
                 </div>
-                <Link to={`/dashboard/profile/${user?.email}`} className="btn btn-neutral rounded-xl px-8">
+                <Link to={`/dashboard/profile`} className="btn btn-neutral rounded-xl px-8">
                     <FaEdit /> Edit Profile
                 </Link>
             </div>

@@ -14,6 +14,9 @@ import AdminRoute from "./AdminRoute";
 import AllBloodDonationRequests from "../Pages/Dashboard/AllBloodDonationRequests/AllBloodDonationRequests";
 import DashboardHome from "../Pages/Dashboard/DashboardHome/DashboardHome";
 import Profile from "../Pages/Dashboard/Profile/Profile";
+import ContentManagement from "../Pages/Dashboard/ContentManagement/ContentManagement";
+import AddBlog from "../Pages/Dashboard/Blogs/AddBlog/AddBlog";
+import BlogDetails from "../Pages/Dashboard/Blogs/BlogDetails/BlogDetails";
 
 export const router = createBrowserRouter([
     {
@@ -58,6 +61,10 @@ export const router = createBrowserRouter([
                 Component:DashboardHome
             },
             {
+                path: 'profile',
+                Component: Profile
+            },
+            {
                 path: 'my-donation-requests',
                 Component:MyDonationRequests
             },
@@ -70,9 +77,18 @@ export const router = createBrowserRouter([
                 Component:AllBloodDonationRequests
             },
             {
-                path: 'profile',
-                Component:Profile
+                path: 'content-management',
+                Component:ContentManagement
+            },
+            {
+                path: 'content-management/add-blog',
+                Component:AddBlog
+            },
+            {
+                path: 'blog/:id',
+                Component:BlogDetails
             }
+            
         ]
     }
 ]);

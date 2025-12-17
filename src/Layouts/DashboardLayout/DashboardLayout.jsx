@@ -3,7 +3,6 @@ import { NavLink, Outlet } from 'react-router';
 import { BiDonateBlood, BiSolidDashboard } from "react-icons/bi";
 import { FaUsers, FaPlusCircle, FaRegUserCircle, FaHome } from 'react-icons/fa';
 import { MdBloodtype, MdOutlineFormatListBulleted } from 'react-icons/md';
-import { IoSettingsOutline } from "react-icons/io5";
 import useRole from '../../hooks/useRole';
 import Loader from '../../components/Loader/Loader';
 
@@ -12,106 +11,82 @@ const DashboardLayout = () => {
 
     if (roleLoading) return <Loader />
 
+    const navLinkClass = ({ isActive }) =>
+        `flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${isActive ? 'bg-red-50 text-red-600 font-bold shadow-sm' : 'hover:bg-gray-100 text-gray-600'
+        }`;
+
     return (
-        <div className="drawer lg:drawer-open max-w-full mx-auto bg-gray-50">
+        <div className="drawer lg:drawer-open bg-gray-50">
             <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
 
-            <div className="drawer-content flex flex-col">
+            <div className="drawer-content flex flex-col min-h-screen">
                 {/* Dashboard Navbar */}
-                <nav className="navbar w-full bg-white border-b px-4 py-3 sticky top-0 z-10">
+                <nav className="navbar w-full bg-white border-b px-6 py-3 sticky top-0 z-10 shadow-sm">
                     <div className="flex-none lg:hidden">
                         <label htmlFor="my-drawer-4" className="btn btn-square btn-ghost">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-6 h-6 stroke-current"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="w-6 h-6 stroke-current"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                         </label>
                     </div>
                     <div className="flex-1">
-                        <h1 className="text-xl font-bold ml-2">
-                            Life <span className='text-red-600'>O+</span> <span className="text-gray-500 font-medium">| Dashboard</span>
+                        <h1 className="text-xl font-bold">
+                            Life <span className='text-red-600'>O+</span>
+                            <span className="text-gray-400 font-medium text-sm ml-2 hidden sm:inline">| {role?.toUpperCase()} DASHBOARD</span>
                         </h1>
                     </div>
                 </nav>
 
                 {/* Page Content */}
-                <main className="p-6 md:p-8 flex-grow">
-                    <Outlet />
+                <main className="p-4 md:p-8">
+                    <div className="max-w-6xl mx-auto">
+                        <Outlet />
+                    </div>
                 </main>
             </div>
 
             {/* Sidebar */}
             <div className="drawer-side z-20">
                 <label htmlFor="my-drawer-4" className="drawer-overlay"></label>
-                <div className="menu p-4 w-72 min-h-full bg-white border-r text-base-content">
-                    <div className="mb-8 px-4 py-2">
-                        <h2 className="text-2xl font-bold text-red-600 flex items-center gap-2">
-                            <MdBloodtype /> Life O+
+                <div className="menu p-5 w-72 min-h-full bg-white border-r text-base-content shadow-xl">
+                    <div className="mb-10 px-2">
+                        <h2 className="text-2xl font-black text-red-600 flex items-center gap-2">
+                            <MdBloodtype className="text-3xl" /> Life O+
                         </h2>
-                        <p className="text-xs text-gray-400 mt-1 uppercase tracking-widest font-semibold">{role} Panel</p>
+                        <div className="badge badge-neutral mt-2 text-[10px] uppercase tracking-tighter">{role} Control Panel</div>
                     </div>
 
-                    <ul className="space-y-2">
-                        {/* Common for All Roles */}
-                        <li>
-                            <NavLink to="/dashboard" end className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${isActive ? 'bg-red-50 text-red-600 font-bold' : 'hover:bg-gray-100'}`}>
-                                <BiSolidDashboard className="text-xl" /> Dashboard Home
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/dashboard/profile" className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${isActive ? 'bg-red-50 text-red-600 font-bold' : 'hover:bg-gray-100'}`}>
-                                <FaRegUserCircle className="text-xl" /> Profile
-                            </NavLink>
-                        </li>
+                    <ul className="space-y-1">
+                        <p className="text-[10px] font-bold text-gray-400 ml-4 mb-2 uppercase tracking-widest">General</p>
+                        <li><NavLink to="/dashboard" end className={navLinkClass}><BiSolidDashboard size={20} /> Dashboard Home</NavLink></li>
+                        <li><NavLink to="/dashboard/profile" className={navLinkClass}><FaRegUserCircle size={20} /> My Profile</NavLink></li>
 
-                        <div className="divider opacity-50">Menu</div>
+                        <div className="divider opacity-30 my-4"></div>
+                        <p className="text-[10px] font-bold text-gray-400 ml-4 mb-2 uppercase tracking-widest">Management</p>
 
-                        {/* Donor Specific */}
+                        {/* Donor Links */}
                         {role === 'donor' && (
                             <>
-                                <li>
-                                    <NavLink to="/dashboard/my-donation-requests" className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${isActive ? 'bg-red-50 text-red-600 font-bold' : 'hover:bg-gray-100'}`}>
-                                        <BiDonateBlood className="text-xl" /> My Donation Requests
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <NavLink to="/dashboard/create-donation-request" className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${isActive ? 'bg-red-50 text-red-600 font-bold' : 'hover:bg-gray-100'}`}>
-                                        <FaPlusCircle className="text-xl" /> Create Request
-                                    </NavLink>
-                                </li>
+                                <li><NavLink to="/dashboard/my-donation-requests" className={navLinkClass}><BiDonateBlood size={20} /> My Requests</NavLink></li>
+                                <li><NavLink to="/donation-request" className={navLinkClass}><FaPlusCircle size={20} /> Create Request</NavLink></li>
                             </>
                         )}
 
-                        {/* Admin & Volunteer Specific */}
+                        {/* Volunteer & Admin Links */}
                         {(role === 'admin' || role === 'volunteer') && (
-                            <li>
-                                <NavLink to="/dashboard/all-blood-donation-requests" className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${isActive ? 'bg-red-50 text-red-600 font-bold' : 'hover:bg-gray-100'}`}>
-                                    <MdOutlineFormatListBulleted className="text-xl" /> All Blood Requests
-                                </NavLink>
-                            </li>
+                            <li><NavLink to="/dashboard/all-blood-donation-requests" className={navLinkClass}><MdOutlineFormatListBulleted size={20} /> All Requests</NavLink></li>
                         )}
 
-                        {/* Admin Only */}
+                        {/* Admin Specific */}
                         {role === 'admin' && (
                             <>
-                                <li>
-                                    <NavLink to="/dashboard/users" className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${isActive ? 'bg-red-50 text-red-600 font-bold' : 'hover:bg-gray-100'}`}>
-                                        <FaUsers className="text-xl" /> All Users
-                                    </NavLink>
-                                </li>
-                                <li>
-                                    <NavLink to="/dashboard/content-management" className={({ isActive }) => `flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${isActive ? 'bg-red-50 text-red-600 font-bold' : 'hover:bg-gray-100'}`}>
-                                        <MdBloodtype className="text-xl" /> Content Management
-                                    </NavLink>
-                                </li>
+                                <li><NavLink to="/dashboard/users" className={navLinkClass}><FaUsers size={20} /> Manage Users</NavLink></li>
+                                <li><NavLink to="/dashboard/content-management" className={navLinkClass}><MdBloodtype size={20} /> Content Manager</NavLink></li>
                             </>
                         )}
                     </ul>
 
-                    {/* Footer Nav */}
-                    <div className="mt-auto pt-5 space-y-2 border-t">
-                        <li>
-                            <NavLink to="/" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 rounded-lg transition-all">
-                                <FaHome className="text-xl" /> Back to Home
-                            </NavLink>
-                        </li>
+                    {/* Exit */}
+                    <div className="mt-auto pt-5 border-t">
+                        <li><NavLink to="/" className="flex items-center gap-3 px-4 py-3 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all font-medium text-gray-500"><FaHome size={20} /> Return Home</NavLink></li>
                     </div>
                 </div>
             </div>

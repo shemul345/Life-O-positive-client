@@ -4,84 +4,162 @@ import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import { useQuery } from '@tanstack/react-query';
 import Loader from '../../../components/Loader/Loader';
 import Swal from 'sweetalert2';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { FaEdit, FaTrashAlt, FaEye, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { Link } from 'react-router';
 
 const AllBloodDonationRequests = () => {
     const { loading } = useAuth();
     const axiosSecure = useAxiosSecure();
-
     const [selectedRequest, setSelectedRequest] = useState(null);
+    const [filter, setFilter] = useState('all');
 
-    const statusBgMap = {
-        pending: 'bg-orange-700',
-        'in-progress': 'bg-yellow-700',
-        done: 'bg-green-700',
-        cancelled: 'bg-red-700',
-    };
-
-    const { data: requests = [], isLoading } = useQuery({
-        queryKey: ['allBloodDonationRequests'],
+    // ডাটা ফেচিং (ফিল্টার সহ)
+    const { data: requests = [], isLoading, refetch } = useQuery({
+        queryKey: ['allBloodDonationRequests', filter],
         queryFn: async () => {
-            const res = await axiosSecure.get('/all-blood-donation-requests');
+            const res = await axiosSecure.get(`/all-blood-donation-requests?status=${filter}`);
             return res.data;
         }
     });
 
-    if (loading || isLoading) {
-        return <Loader />;
-    }
+    // স্ট্যাটাস পরিবর্তনের হ্যান্ডেলার
+    const handleStatusChange = async (id, newStatus) => {
+        const result = await Swal.fire({
+            title: `Mark as ${newStatus}?`,
+            text: "Do you want to update this request status?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, Update'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const res = await axiosSecure.patch(`/donation-requests/status/${id}`, { status: newStatus });
+                if (res.data.modifiedCount > 0) {
+                    refetch();
+                    Swal.fire('Updated!', `Status is now ${newStatus}.`, 'success');
+                }
+            } catch {
+                Swal.fire('Error', 'Failed to update status', 'error');
+            }
+        }
+    };
+
+    // ডিলিট করার হ্যান্ডেলার
+    const handleDelete = async (id) => {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "This request will be permanently removed!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Yes, Delete it!'
+        });
+
+        if (result.isConfirmed) {
+            const res = await axiosSecure.delete(`/donation-requests/${id}`);
+            if (res.data.deletedCount > 0) {
+                refetch();
+                Swal.fire('Deleted!', 'Request has been removed.', 'success');
+            }
+        }
+    };
+
+    const statusClasses = {
+        pending: 'badge-warning',
+        'inprogress': 'badge-info text-white',
+        done: 'badge-success text-white',
+        canceled: 'badge-error text-white',
+    };
+
+    if (loading || isLoading) return <Loader />;
 
     return (
-        <div>
-            <h1 className="text-2xl font-bold ml-10 mb-5">
-                All Blood Donation Requests
-            </h1>
+        <div className="p-6 bg-base-100 rounded-3xl shadow-sm border border-base-200">
+            {/* Header & Filter */}
+            <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                <div>
+                    <h1 className="text-3xl font-extrabold text-neutral tracking-tight">
+                        Blood Donation <span className="text-red-600">Requests</span>
+                    </h1>
+                    <p className="text-gray-500 font-medium">Manage and monitor all donation activities</p>
+                </div>
 
-            <div className="overflow-x-auto">
-                <table className="table table-zebra">
-                    <thead>
-                        <tr className="text-black">
-                            <th>SL</th>
-                            <th>Recipient Name</th>
-                            <th>Blood Group</th>
+                <select
+                    onChange={(e) => setFilter(e.target.value)}
+                    className="select select-bordered w-full md:w-48 font-bold text-gray-600"
+                >
+                    <option value="all">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="inprogress">In Progress</option>
+                    <option value="done">Done</option>
+                    <option value="canceled">Canceled</option>
+                </select>
+            </div>
+
+            {/* Table */}
+            <div className="overflow-x-auto rounded-2xl border border-base-200">
+                <table className="table table-zebra w-full">
+                    <thead className="bg-gray-50 text-neutral text-sm uppercase">
+                        <tr>
+                            <th>#</th>
+                            <th>Recipient Info</th>
+                            <th>Location</th>
+                            <th>Date/Time</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            <th className="text-center">Actions</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         {requests.map((request, index) => (
-                            <tr key={request._id}>
-                                <td>{index + 1}</td>
-                                <td>{request.recipientName}</td>
-                                <td>{request.bloodGroup}</td>
+                            <tr key={request._id} className="hover:bg-base-200 transition-colors">
+                                <td className="font-bold text-gray-400">{index + 1}</td>
                                 <td>
-                                    <span
-                                        className={`px-3 py-1 rounded text-white text-sm capitalize ${statusBgMap[request.status] ||
-                                            'bg-gray-600'
-                                            }`}
-                                    >
+                                    <div className="flex items-center gap-3">
+                                        <div className="badge badge-error badge-outline font-black">{request.bloodGroup}</div>
+                                        <div className="font-bold">{request.recipientName}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div className="text-sm opacity-70 font-semibold">{request.recipientDistrict}</div>
+                                    <div className="text-xs opacity-50">{request.hospitalName}</div>
+                                </td>
+                                <td>
+                                    <div className="text-sm font-medium">{request.donationDate}</div>
+                                    <div className="text-xs text-red-400">{request.donationTime}</div>
+                                </td>
+                                <td>
+                                    <span className={`badge ${statusClasses[request.status] || 'badge-ghost'} font-bold p-3`}>
                                         {request.status}
                                     </span>
                                 </td>
-                                <td className="flex gap-2">
-                                    <button
-                                        className="btn"
-                                        onClick={() => {
-                                            setSelectedRequest(request);
-                                            document
-                                                .getElementById(
-                                                    'view_request_modal'
-                                                )
-                                                .showModal();
-                                        }}
-                                    >
-                                        View
-                                    </button>
+                                <td>
+                                    <div className="flex justify-center gap-2">
+                                        {/* View Modal Trigger */}
+                                        <button
+                                            onClick={() => { setSelectedRequest(request); document.getElementById('view_request_modal').showModal(); }}
+                                            className="btn btn-sm btn-circle btn-ghost text-blue-500" title="View Details"
+                                        >
+                                            <FaEye size={18} />
+                                        </button>
 
-                                    <button className="btn btn-square hover:bg-primary hover:text-white">
-                                        <FaEdit />
-                                    </button>
+                                        {/* Dynamic Status Buttons */}
+                                        {request.donationStatus === 'inprogress' && (
+                                            <>
+                                                <button onClick={() => handleStatusChange(request._id, 'done')} className="btn btn-sm btn-circle btn-ghost text-green-500" title="Done"><FaCheckCircle size={18} /></button>
+                                                <button onClick={() => handleStatusChange(request._id, 'canceled')} className="btn btn-sm btn-circle btn-ghost text-red-500" title="Cancel"><FaTimesCircle size={18} /></button>
+                                            </>
+                                        )}
+
+                                        <Link to={`/dashboard/edit-request/${request._id}`} className="btn btn-sm btn-circle btn-ghost text-orange-400">
+                                            <FaEdit size={16} />
+                                        </Link>
+
+                                        <button onClick={() => handleDelete(request._id)} className="btn btn-sm btn-circle btn-ghost text-red-400">
+                                            <FaTrashAlt size={16} />
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}
@@ -89,84 +167,46 @@ const AllBloodDonationRequests = () => {
                 </table>
             </div>
 
-            {/* ===== SINGLE DYNAMIC MODAL ===== */}
-            <dialog id="view_request_modal" className="modal">
-                <div className="modal-box w-11/12 max-w-5xl">
+            {/* Modal */}
+            <dialog id="view_request_modal" className="modal modal-bottom sm:modal-middle">
+                <div className="modal-box max-w-2xl rounded-3xl">
                     {selectedRequest && (
-                        <>
-                            <div className="flex justify-between items-center mb-8">
-                                <h3 className="text-2xl font-bold">
-                                    {selectedRequest.recipientName}
-                                </h3>
-                                <p className="text-xl font-bold">
-                                    Blood Group:{' '}
-                                    <span className="text-red-600">
-                                        {selectedRequest.bloodGroup}
-                                    </span>
-                                </p>
+                        <div className="space-y-6">
+                            <div className="flex justify-between items-center border-b pb-4">
+                                <h3 className="text-2xl font-black text-neutral">Request Details</h3>
+                                <div className="badge badge-error p-4 text-white font-bold text-lg">{selectedRequest.bloodGroup}</div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <h4 className="text-xl font-bold mb-3">
-                                        Address Information
-                                    </h4>
-                                    <p>
-                                        District:{' '}
-                                        {
-                                            selectedRequest.recipientDistrict
-                                        }
-                                    </p>
-                                    <p>
-                                        Upazila:{' '}
-                                        {
-                                            selectedRequest.recipientUpazila
-                                        }
-                                    </p>
-                                    <p>
-                                        Hospital:{' '}
-                                        {selectedRequest.hospitalName}
-                                    </p>
-                                    <p>
-                                        Local Address:{' '}
-                                        {selectedRequest.fullAddress}
-                                    </p>
+                                <div className="space-y-3">
+                                    <p className="text-sm text-gray-400 uppercase font-bold">Recipient Info</p>
+                                    <p className="font-bold">Name: <span className="font-medium">{selectedRequest.recipientName}</span></p>
+                                    <p className="font-bold">Contact: <span className="font-medium">{selectedRequest.recipientContactNo}</span></p>
+                                    <p className="font-bold">Hospital: <span className="font-medium">{selectedRequest.hospitalName}</span></p>
                                 </div>
-
-                                <div>
-                                    <h4 className="text-xl font-bold mb-3">
-                                        Patient Information
-                                    </h4>
-                                    <p>
-                                        Contact:{' '}
-                                        {
-                                            selectedRequest
-                                                .recipientContactNo
-                                        }
-                                    </p>
-                                    <p>
-                                        Donation Date:{' '}
-                                        {selectedRequest.donationDate}
-                                    </p>
-                                    <p>
-                                        Donation Time:{' '}
-                                        {selectedRequest.donationTime}
-                                    </p>
-                                    <p>
-                                        Condition:{' '}
-                                        {selectedRequest.requestMessage}
-                                    </p>
+                                <div className="space-y-3">
+                                    <p className="text-sm text-gray-400 uppercase font-bold">Location & Time</p>
+                                    <p className="font-bold">District: <span className="font-medium">{selectedRequest.recipientDistrict}</span></p>
+                                    <p className="font-bold">Date: <span className="font-medium">{selectedRequest.donationDate}</span></p>
+                                    <p className="font-bold">Time: <span className="font-medium text-red-500">{selectedRequest.donationTime}</span></p>
                                 </div>
                             </div>
-                        </>
-                    )}
 
+                            <div className="bg-gray-50 p-4 rounded-2xl border border-dashed border-gray-300">
+                                <p className="text-sm text-gray-400 uppercase font-bold mb-2">Patient Condition</p>
+                                <p className="italic text-gray-700">"{selectedRequest.requestMessage}"</p>
+                            </div>
+                        </div>
+                    )}
                     <div className="modal-action">
                         <form method="dialog">
-                            <button className="btn">Close</button>
+                            <button className="btn btn-neutral px-8 rounded-xl">Close</button>
                         </form>
                     </div>
                 </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                </form>
             </dialog>
         </div>
     );
