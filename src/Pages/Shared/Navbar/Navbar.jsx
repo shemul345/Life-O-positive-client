@@ -10,7 +10,6 @@ const Navbar = () => {
     const { user, signOutUser } = useAuth();
     const links = <>
         <li><NavLink to="/">Home</NavLink></li>
-        <li><NavLink to="/coverage">Coverage</NavLink></li>
         <li><NavLink to="/about-us">About Us</NavLink></li>
         <li><NavLink to="/blogs">Blogs</NavLink></li>
 

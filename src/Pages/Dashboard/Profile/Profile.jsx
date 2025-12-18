@@ -109,7 +109,7 @@ const Profile = () => {
                 <div className="flex flex-col items-center border-b md:border-b-0 md:border-r pb-8 md:pb-0">
                     <div className="relative">
                         <img
-                            src={profileData.avatar || 'https://via.placeholder.com/150'}
+                            src={profileData.avatar || 'https://i.ibb.co.com/R4sWDbvY/icons8-user-40.png'}
                             alt="Avatar"
                             className="w-48 h-48 rounded-full border-8 border-red-50 object-cover shadow-inner"
                         />
