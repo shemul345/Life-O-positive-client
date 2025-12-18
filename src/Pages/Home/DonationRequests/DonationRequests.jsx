@@ -1,21 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import useAxiosPublic from '../../../hooks/useAxiosPublic';
 import Loader from '../../../components/Loader/Loader';
-import { FaMapMarkerAlt, FaCalendarAlt, FaTint } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa';
 import { Link } from 'react-router';
 
 const DonationRequests = () => {
     const axiosPublic = useAxiosPublic();
+    const [currentPage, setCurrentPage] = useState(0);
+    const size = 15; // প্রতি পেজে ১৫টি
 
-    const { data: requests = [], isLoading } = useQuery({
-        queryKey: ['publicPendingRequests'],
+    const { data, isLoading } = useQuery({
+        queryKey: ['publicPendingRequests', currentPage],
         queryFn: async () => {
-            // শুধুমাত্র pending রিকোয়েস্টগুলো দেখাবো যাতে ডোনাররা রক্ত দিতে পারে
-            const res = await axiosPublic.get('/all-blood-donation-requests?status=pending');
+            const res = await axiosPublic.get(`/all-blood-donation-requests?status=pending&page=${currentPage}&size=${size}`);
             return res.data;
         }
     });
+
+    const requests = data?.result || [];
+    const totalCount = data?.count || 0;
+    const numberOfPages = Math.ceil(totalCount / size);
+    const pages = [...Array(numberOfPages).keys()];
 
     if (isLoading) return <Loader />;
 
@@ -23,7 +29,7 @@ const DonationRequests = () => {
         <div className="max-w-7xl mx-auto my-16 px-4">
             <div className="text-center mb-12">
                 <h1 className="text-4xl font-black uppercase mb-2">Available <span className="text-red-600">Donation</span> Requests</h1>
-                <p className="text-gray-500 font-medium">Your one donation can save a life. Find a request near you.</p>
+                <p className="text-gray-500 font-medium">Find urgent blood requirements and save lives today.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -33,7 +39,9 @@ const DonationRequests = () => {
                             <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center text-red-600 font-black text-2xl border border-red-100">
                                 {request.bloodGroup}
                             </div>
-                            <span className="badge badge-warning font-bold p-3 uppercase text-[10px] tracking-widest">{request.status}</span>
+                            <span className="badge badge-warning font-bold p-3 uppercase text-[10px] tracking-widest">
+                                {request.donationStatus || request.status}
+                            </span>
                         </div>
 
                         <h3 className="text-xl font-bold text-gray-800 mb-2">{request.recipientName}</h3>
@@ -45,7 +53,7 @@ const DonationRequests = () => {
 
                         <div className="mt-6">
                             <Link
-                                to={`/donation-requests/${request._id}`} // ডাইনামিক আইডি এখানে কাজ করবে
+                                to={`/donation-requests/${request._id}`}
                                 className="btn btn-neutral w-full rounded-xl font-bold border-none bg-gray-900 hover:bg-red-600 text-white"
                             >
                                 View Details
@@ -54,6 +62,33 @@ const DonationRequests = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Pagination Controls */}
+            {numberOfPages > 1 && (
+                <div className="flex justify-center mt-12 gap-2">
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                        className="btn btn-sm"
+                        disabled={currentPage === 0}
+                    >Prev</button>
+
+                    {pages.map(page => (
+                        <button
+                            key={page}
+                            onClick={() => setCurrentPage(page)}
+                            className={`btn btn-sm ${currentPage === page ? 'btn-error text-white' : ''}`}
+                        >
+                            {page + 1}
+                        </button>
+                    ))}
+
+                    <button
+                        onClick={() => setCurrentPage(prev => Math.min(numberOfPages - 1, prev + 1))}
+                        className="btn btn-sm"
+                        disabled={currentPage === numberOfPages - 1}
+                    >Next</button>
+                </div>
+            )}
 
             {requests.length === 0 && (
                 <div className="text-center py-20 bg-gray-50 rounded-3xl border border-dashed">

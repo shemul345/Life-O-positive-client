@@ -12,17 +12,25 @@ const AllBloodDonationRequests = () => {
     const axiosSecure = useAxiosSecure();
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [filter, setFilter] = useState('all');
+    const [currentPage, setCurrentPage] = useState(0);
+    const size = 15;
 
-    // ডাটা ফেচিং
-    const { data: requests = [], isLoading, refetch } = useQuery({
-        queryKey: ['allBloodDonationRequests', filter],
+    // ডাটা ফেচিং - এরর ফিক্স করা হয়েছে (data.result ব্যবহার করে)
+    const { data, isLoading, refetch } = useQuery({
+        queryKey: ['allBloodDonationRequests', filter, currentPage],
         queryFn: async () => {
-            const res = await axiosSecure.get(`/all-blood-donation-requests?status=${filter}`);
+            const res = await axiosSecure.get(`/all-blood-donation-requests?status=${filter}&page=${currentPage}&size=${size}`);
             return res.data;
         }
     });
 
-    // স্ট্যাটাস পরিবর্তনের হ্যান্ডেলার (Accept, Done, Cancel)
+    // এরর হ্যান্ডেলিং এর জন্য ডাটা সেপারেশন
+    const requests = data?.result || [];
+    const totalCount = data?.count || 0;
+    const numberOfPages = Math.ceil(totalCount / size);
+    const pages = [...Array(numberOfPages).keys()];
+
+    // স্ট্যাটাস পরিবর্তনের হ্যান্ডেলার
     const handleStatusChange = async (id, newStatus) => {
         let title = `Mark as ${newStatus}?`;
         let text = "Do you want to update this request status?";
@@ -44,7 +52,6 @@ const AllBloodDonationRequests = () => {
 
         if (result.isConfirmed) {
             try {
-                // donor info সহ স্ট্যাটাস আপডেট (ঐচ্ছিক: কে এক্সেপ্ট করলো তা ট্র্যাক করতে)
                 const updateData = {
                     status: newStatus,
                     donorName: user?.displayName,
@@ -103,7 +110,11 @@ const AllBloodDonationRequests = () => {
                 </div>
 
                 <select
-                    onChange={(e) => setFilter(e.target.value)}
+                    onChange={(e) => {
+                        setFilter(e.target.value);
+                        setCurrentPage(0); // ফিল্টার চেঞ্জ করলে প্রথম পেজে নিয়ে যাবে
+                    }}
+                    value={filter}
                     className="select select-bordered w-full md:w-48 font-bold text-gray-600 rounded-xl"
                 >
                     <option value="all">All Status</option>
@@ -128,85 +139,99 @@ const AllBloodDonationRequests = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {requests.map((request, index) => (
-                            <tr key={request._id} className="hover:bg-base-200 transition-colors">
-                                <td className="font-bold text-gray-400">{index + 1}</td>
-                                <td>
-                                    <div className="flex items-center gap-3">
-                                        <div className="badge badge-error badge-outline font-black">{request.bloodGroup}</div>
-                                        <div className="font-bold">{request.recipientName}</div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div className="text-sm opacity-70 font-semibold">{request.recipientDistrict}</div>
-                                    <div className="text-xs opacity-50">{request.hospitalName}</div>
-                                </td>
-                                <td>
-                                    <div className="text-sm font-medium">{request.donationDate}</div>
-                                    <div className="text-xs text-red-400">{request.donationTime}</div>
-                                </td>
-                                <td>
-                                    <span className={`badge ${statusClasses[request.status] || 'badge-ghost'} font-bold p-3`}>
-                                        {request.status}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div className="flex justify-center items-center gap-2">
-                                        {/* View Modal Trigger */}
-                                        <button
-                                            onClick={() => { setSelectedRequest(request); document.getElementById('view_request_modal').showModal(); }}
-                                            className="btn btn-sm btn-circle btn-ghost text-blue-500" title="View Details"
-                                        >
-                                            <FaEye size={18} />
-                                        </button>
-
-                                        {/* Logical Buttons based on Status */}
-                                        {request.status === 'pending' && (
+                        {requests.length > 0 ? (
+                            requests.map((request, index) => (
+                                <tr key={request._id} className="hover:bg-base-200 transition-colors">
+                                    <td className="font-bold text-gray-400">{index + 1 + (currentPage * size)}</td>
+                                    <td>
+                                        <div className="flex items-center gap-3">
+                                            <div className="badge badge-error badge-outline font-black">{request.bloodGroup}</div>
+                                            <div className="font-bold">{request.recipientName}</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className="text-sm opacity-70 font-semibold">{request.recipientDistrict}</div>
+                                        <div className="text-xs opacity-50">{request.hospitalName}</div>
+                                    </td>
+                                    <td>
+                                        <div className="text-sm font-medium">{request.donationDate}</div>
+                                        <div className="text-xs text-red-400">{request.donationTime}</div>
+                                    </td>
+                                    <td>
+                                        <span className={`badge ${statusClasses[request.status] || 'badge-ghost'} font-bold p-3`}>
+                                            {request.status}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div className="flex justify-center items-center gap-2">
                                             <button
-                                                onClick={() => handleStatusChange(request._id, 'inprogress')}
-                                                className="btn btn-sm btn-info text-white rounded-lg flex items-center gap-1"
+                                                onClick={() => { setSelectedRequest(request); document.getElementById('view_request_modal').showModal(); }}
+                                                className="btn btn-sm btn-circle btn-ghost text-blue-500" title="View Details"
                                             >
-                                                <FaHandHoldingHeart /> Accept
+                                                <FaEye size={18} />
                                             </button>
-                                        )}
 
-                                        {request.status === 'inprogress' && (
-                                            <>
+                                            {request.status === 'pending' && (
                                                 <button
-                                                    onClick={() => handleStatusChange(request._id, 'done')}
-                                                    className="btn btn-sm btn-success text-white rounded-lg" title="Mark Done"
+                                                    onClick={() => handleStatusChange(request._id, 'inprogress')}
+                                                    className="btn btn-sm btn-info text-white rounded-lg flex items-center gap-1"
                                                 >
-                                                    <FaCheckCircle /> Done
+                                                    <FaHandHoldingHeart /> Accept
                                                 </button>
-                                                <button
-                                                    onClick={() => handleStatusChange(request._id, 'canceled')}
-                                                    className="btn btn-sm btn-error text-white rounded-lg" title="Cancel"
-                                                >
-                                                    <FaTimesCircle />
-                                                </button>
-                                            </>
-                                        )}
+                                            )}
 
-                                        {request.status === 'done' && (
-                                            <span className="text-green-500 font-bold text-xs">COMPLETED</span>
-                                        )}
+                                            {request.status === 'inprogress' && (
+                                                <>
+                                                    <button
+                                                        onClick={() => handleStatusChange(request._id, 'done')}
+                                                        className="btn btn-sm btn-success text-white rounded-lg" title="Mark Done"
+                                                    >
+                                                        <FaCheckCircle /> Done
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleStatusChange(request._id, 'canceled')}
+                                                        className="btn btn-sm btn-error text-white rounded-lg" title="Cancel"
+                                                    >
+                                                        <FaTimesCircle />
+                                                    </button>
+                                                </>
+                                            )}
 
-                                        {/* Edit & Delete for Admins/Owners */}
-                                        <Link to={`/dashboard/edit-request/${request._id}`} className="btn btn-sm btn-circle btn-ghost text-orange-400">
-                                            <FaEdit size={16} />
-                                        </Link>
-                                        <button onClick={() => handleDelete(request._id)} className="btn btn-sm btn-circle btn-ghost text-red-400">
-                                            <FaTrashAlt size={16} />
-                                        </button>
-                                    </div>
-                                </td>
+                                            <Link to={`/dashboard/edit-request/${request._id}`} className="btn btn-sm btn-circle btn-ghost text-orange-400">
+                                                <FaEdit size={16} />
+                                            </Link>
+                                            <button onClick={() => handleDelete(request._id)} className="btn btn-sm btn-circle btn-ghost text-red-400">
+                                                <FaTrashAlt size={16} />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="6" className="text-center py-10 text-gray-400 font-bold">No Requests Found</td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>
 
-            {/* Modal - Same as before */}
+            {/* Pagination Controls */}
+            {numberOfPages > 1 && (
+                <div className="flex justify-center mt-8 gap-2">
+                    {pages.map(page => (
+                        <button
+                            key={page}
+                            onClick={() => setCurrentPage(page)}
+                            className={`btn btn-sm ${currentPage === page ? 'btn-error text-white' : ''}`}
+                        >
+                            {page + 1}
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {/* Modal */}
             <dialog id="view_request_modal" className="modal modal-bottom sm:modal-middle">
                 <div className="modal-box max-w-2xl rounded-3xl">
                     {selectedRequest && (

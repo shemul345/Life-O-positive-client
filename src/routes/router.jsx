@@ -19,6 +19,7 @@ import AddBlog from "../Pages/Dashboard/Blogs/AddBlog/AddBlog";
 import BlogDetails from "../Pages/Dashboard/Blogs/BlogDetails/BlogDetails";
 import DonationRequests from "../Pages/Home/DonationRequests/DonationRequests";
 import DonationRequestDetails from "../Pages/Home/DonationRequests/DonationRequestDetails";
+import ContentPage from "../Pages/ContentPage/ContentPage";
 
 export const router = createBrowserRouter([
     {
@@ -49,6 +50,10 @@ export const router = createBrowserRouter([
             {
                 path: "donation-request",
                 element:<PrivateRouter><DonationRequest></DonationRequest></PrivateRouter>
+            },
+            {
+                path: 'blogs',
+                Component:ContentPage
             }
         ]
     },
