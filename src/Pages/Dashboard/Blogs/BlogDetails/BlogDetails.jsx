@@ -40,7 +40,7 @@ const BlogDetails = () => {
 
             {/* Blog Content (HTML rendering) */}
             <div
-                className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
+                className="prose lg:prose-xl max-w-none" // 'prose' ক্লাসটি এখন কাজ করবে
                 dangerouslySetInnerHTML={{ __html: blog.content }}
             />
         </div>

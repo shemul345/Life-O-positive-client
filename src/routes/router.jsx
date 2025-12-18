@@ -17,6 +17,7 @@ import Profile from "../Pages/Dashboard/Profile/Profile";
 import ContentManagement from "../Pages/Dashboard/ContentManagement/ContentManagement";
 import AddBlog from "../Pages/Dashboard/Blogs/AddBlog/AddBlog";
 import BlogDetails from "../Pages/Dashboard/Blogs/BlogDetails/BlogDetails";
+import DonationRequests from "../Pages/Home/DonationRequests/DonationRequests";
 
 export const router = createBrowserRouter([
     {
@@ -26,6 +27,14 @@ export const router = createBrowserRouter([
             {
                 index: true,
                 Component: Home,
+            },
+            {
+                path: "blog/:id",
+                element: <BlogDetails />,
+            },
+            {
+                path: "donation-requests", 
+                element: <DonationRequests />
             },
             {
                 path: "collection-area",
@@ -83,10 +92,6 @@ export const router = createBrowserRouter([
             {
                 path: 'content-management/add-blog',
                 Component:AddBlog
-            },
-            {
-                path: 'blog/:id',
-                Component:BlogDetails
             }
             
         ]

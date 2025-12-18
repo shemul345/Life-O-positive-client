@@ -4,16 +4,16 @@ import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import { useQuery } from '@tanstack/react-query';
 import Loader from '../../../components/Loader/Loader';
 import Swal from 'sweetalert2';
-import { FaEdit, FaTrashAlt, FaEye, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaEdit, FaTrashAlt, FaEye, FaCheckCircle, FaTimesCircle, FaHandHoldingHeart } from 'react-icons/fa';
 import { Link } from 'react-router';
 
 const AllBloodDonationRequests = () => {
-    const { loading } = useAuth();
+    const { user, loading } = useAuth();
     const axiosSecure = useAxiosSecure();
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [filter, setFilter] = useState('all');
 
-    // ডাটা ফেচিং (ফিল্টার সহ)
+    // ডাটা ফেচিং
     const { data: requests = [], isLoading, refetch } = useQuery({
         queryKey: ['allBloodDonationRequests', filter],
         queryFn: async () => {
@@ -22,23 +22,39 @@ const AllBloodDonationRequests = () => {
         }
     });
 
-    // স্ট্যাটাস পরিবর্তনের হ্যান্ডেলার
+    // স্ট্যাটাস পরিবর্তনের হ্যান্ডেলার (Accept, Done, Cancel)
     const handleStatusChange = async (id, newStatus) => {
+        let title = `Mark as ${newStatus}?`;
+        let text = "Do you want to update this request status?";
+
+        if (newStatus === 'inprogress') {
+            title = "Accept this Request?";
+            text = "By accepting, you are committing to help this patient.";
+        }
+
         const result = await Swal.fire({
-            title: `Mark as ${newStatus}?`,
-            text: "Do you want to update this request status?",
+            title: title,
+            text: text,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, Update'
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Proceed'
         });
 
         if (result.isConfirmed) {
             try {
-                const res = await axiosSecure.patch(`/donation-requests/status/${id}`, { status: newStatus });
+                // donor info সহ স্ট্যাটাস আপডেট (ঐচ্ছিক: কে এক্সেপ্ট করলো তা ট্র্যাক করতে)
+                const updateData = {
+                    status: newStatus,
+                    donorName: user?.displayName,
+                    donorEmail: user?.email
+                };
+
+                const res = await axiosSecure.patch(`/donation-requests/status/${id}`, updateData);
                 if (res.data.modifiedCount > 0) {
                     refetch();
-                    Swal.fire('Updated!', `Status is now ${newStatus}.`, 'success');
+                    Swal.fire('Updated!', `Request is now ${newStatus}.`, 'success');
                 }
             } catch {
                 Swal.fire('Error', 'Failed to update status', 'error');
@@ -67,8 +83,8 @@ const AllBloodDonationRequests = () => {
     };
 
     const statusClasses = {
-        pending: 'badge-warning',
-        'inprogress': 'badge-info text-white',
+        pending: 'badge-warning text-white',
+        inprogress: 'badge-info text-white',
         done: 'badge-success text-white',
         canceled: 'badge-error text-white',
     };
@@ -83,12 +99,12 @@ const AllBloodDonationRequests = () => {
                     <h1 className="text-3xl font-extrabold text-neutral tracking-tight">
                         Blood Donation <span className="text-red-600">Requests</span>
                     </h1>
-                    <p className="text-gray-500 font-medium">Manage and monitor all donation activities</p>
+                    <p className="text-gray-500 font-medium">Accept and manage donation lifecycles</p>
                 </div>
 
                 <select
                     onChange={(e) => setFilter(e.target.value)}
-                    className="select select-bordered w-full md:w-48 font-bold text-gray-600"
+                    className="select select-bordered w-full md:w-48 font-bold text-gray-600 rounded-xl"
                 >
                     <option value="all">All Status</option>
                     <option value="pending">Pending</option>
@@ -108,7 +124,7 @@ const AllBloodDonationRequests = () => {
                             <th>Location</th>
                             <th>Date/Time</th>
                             <th>Status</th>
-                            <th className="text-center">Actions</th>
+                            <th className="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -135,7 +151,7 @@ const AllBloodDonationRequests = () => {
                                     </span>
                                 </td>
                                 <td>
-                                    <div className="flex justify-center gap-2">
+                                    <div className="flex justify-center items-center gap-2">
                                         {/* View Modal Trigger */}
                                         <button
                                             onClick={() => { setSelectedRequest(request); document.getElementById('view_request_modal').showModal(); }}
@@ -144,18 +160,41 @@ const AllBloodDonationRequests = () => {
                                             <FaEye size={18} />
                                         </button>
 
-                                        {/* Dynamic Status Buttons */}
-                                        {request.donationStatus === 'inprogress' && (
+                                        {/* Logical Buttons based on Status */}
+                                        {request.status === 'pending' && (
+                                            <button
+                                                onClick={() => handleStatusChange(request._id, 'inprogress')}
+                                                className="btn btn-sm btn-info text-white rounded-lg flex items-center gap-1"
+                                            >
+                                                <FaHandHoldingHeart /> Accept
+                                            </button>
+                                        )}
+
+                                        {request.status === 'inprogress' && (
                                             <>
-                                                <button onClick={() => handleStatusChange(request._id, 'done')} className="btn btn-sm btn-circle btn-ghost text-green-500" title="Done"><FaCheckCircle size={18} /></button>
-                                                <button onClick={() => handleStatusChange(request._id, 'canceled')} className="btn btn-sm btn-circle btn-ghost text-red-500" title="Cancel"><FaTimesCircle size={18} /></button>
+                                                <button
+                                                    onClick={() => handleStatusChange(request._id, 'done')}
+                                                    className="btn btn-sm btn-success text-white rounded-lg" title="Mark Done"
+                                                >
+                                                    <FaCheckCircle /> Done
+                                                </button>
+                                                <button
+                                                    onClick={() => handleStatusChange(request._id, 'canceled')}
+                                                    className="btn btn-sm btn-error text-white rounded-lg" title="Cancel"
+                                                >
+                                                    <FaTimesCircle />
+                                                </button>
                                             </>
                                         )}
 
+                                        {request.status === 'done' && (
+                                            <span className="text-green-500 font-bold text-xs">COMPLETED</span>
+                                        )}
+
+                                        {/* Edit & Delete for Admins/Owners */}
                                         <Link to={`/dashboard/edit-request/${request._id}`} className="btn btn-sm btn-circle btn-ghost text-orange-400">
                                             <FaEdit size={16} />
                                         </Link>
-
                                         <button onClick={() => handleDelete(request._id)} className="btn btn-sm btn-circle btn-ghost text-red-400">
                                             <FaTrashAlt size={16} />
                                         </button>
@@ -167,7 +206,7 @@ const AllBloodDonationRequests = () => {
                 </table>
             </div>
 
-            {/* Modal */}
+            {/* Modal - Same as before */}
             <dialog id="view_request_modal" className="modal modal-bottom sm:modal-middle">
                 <div className="modal-box max-w-2xl rounded-3xl">
                     {selectedRequest && (
@@ -176,24 +215,20 @@ const AllBloodDonationRequests = () => {
                                 <h3 className="text-2xl font-black text-neutral">Request Details</h3>
                                 <div className="badge badge-error p-4 text-white font-bold text-lg">{selectedRequest.bloodGroup}</div>
                             </div>
-
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-3">
                                     <p className="text-sm text-gray-400 uppercase font-bold">Recipient Info</p>
                                     <p className="font-bold">Name: <span className="font-medium">{selectedRequest.recipientName}</span></p>
-                                    <p className="font-bold">Contact: <span className="font-medium">{selectedRequest.recipientContactNo}</span></p>
                                     <p className="font-bold">Hospital: <span className="font-medium">{selectedRequest.hospitalName}</span></p>
                                 </div>
                                 <div className="space-y-3">
                                     <p className="text-sm text-gray-400 uppercase font-bold">Location & Time</p>
-                                    <p className="font-bold">District: <span className="font-medium">{selectedRequest.recipientDistrict}</span></p>
                                     <p className="font-bold">Date: <span className="font-medium">{selectedRequest.donationDate}</span></p>
                                     <p className="font-bold">Time: <span className="font-medium text-red-500">{selectedRequest.donationTime}</span></p>
                                 </div>
                             </div>
-
                             <div className="bg-gray-50 p-4 rounded-2xl border border-dashed border-gray-300">
-                                <p className="text-sm text-gray-400 uppercase font-bold mb-2">Patient Condition</p>
+                                <p className="text-sm text-gray-400 uppercase font-bold mb-2">Message</p>
                                 <p className="italic text-gray-700">"{selectedRequest.requestMessage}"</p>
                             </div>
                         </div>
@@ -204,9 +239,6 @@ const AllBloodDonationRequests = () => {
                         </form>
                     </div>
                 </div>
-                <form method="dialog" className="modal-backdrop">
-                    <button>close</button>
-                </form>
             </dialog>
         </div>
     );

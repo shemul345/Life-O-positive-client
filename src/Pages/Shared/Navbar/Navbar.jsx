@@ -62,9 +62,12 @@ const Navbar = () => {
                         :
                         <Link className='btn' to='/login'>Sign In</Link>
                 }
-                <Link to='/dashboard/donate'
-                    className='btn btn-primary
-                     text-white font-bold ml-3'>Donate</Link>
+                <Link
+                    to={user ? `/donation-requests` : '/login'}
+                    className="btn btn-primary"
+                >
+                    Donate Now
+                </Link>
             </div>
         </div>
     );
