@@ -63,12 +63,12 @@ const DashboardLayout = () => {
                         <p className="text-[10px] font-bold text-gray-400 ml-4 mb-2 uppercase tracking-widest">Management</p>
 
                         {/* Donor Links */}
-                        {role === 'donor' && (
-                            <>
+                        
+                           
                                 <li><NavLink to="/dashboard/my-donation-requests" className={navLinkClass}><BiDonateBlood size={20} /> My Requests</NavLink></li>
                                 <li><NavLink to="/donation-request" className={navLinkClass}><FaPlusCircle size={20} /> Create Request</NavLink></li>
-                            </>
-                        )}
+                            
+                        
 
                         {/* Volunteer & Admin Links */}
                         {(role === 'admin' || role === 'volunteer') && (

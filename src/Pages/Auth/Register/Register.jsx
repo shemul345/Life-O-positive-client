@@ -82,13 +82,17 @@ const Register = () => {
             const dbRes = await axiosSecure.post('/users', userInfo);
 
             if (dbRes.data.insertedId || dbRes.data.message === 'success') {
-                toast.success('Registration successful');
+                toast.success('Registration successful', {
+                    position:'top-center'
+                });
                 navigate(location.state || '/');
             }
 
         } catch (err) {
             console.error(err);
-            toast.error(err.message || 'Registration failed');
+            toast.error(err.message || 'Registration failed', {
+                position:'top-center'
+            });
         }
     };
 

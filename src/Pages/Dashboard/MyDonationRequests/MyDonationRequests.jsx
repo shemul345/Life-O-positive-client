@@ -3,202 +3,183 @@ import useAuth from '../../../hooks/useAuth';
 import useAxiosSecure from '../../../hooks/useAxiosSecure';
 import { useQuery } from "@tanstack/react-query";
 import Loader from '../../../components/Loader/Loader';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { FaEdit, FaTrashAlt, FaEye } from 'react-icons/fa';
 import Swal from 'sweetalert2';
+import { Link } from 'react-router';
 
 const MyDonationRequests = () => {
     const { user, loading } = useAuth();
     const axiosSecure = useAxiosSecure();
-
     const [selectedRequest, setSelectedRequest] = useState(null);
 
+    // স্ট্যাটাস অনুযায়ী কালার ম্যাপ (ব্যাকএন্ড স্ট্যাটাসের সাথে মিল রেখে)
     const statusBgMap = {
-        pending: 'bg-orange-700',
-        'in-progress': 'bg-yellow-700',
-        done: 'bg-green-700',
-        cancelled: 'bg-red-700',
+        pending: 'bg-orange-600',
+        inprogress: 'bg-blue-600',
+        done: 'bg-green-600',
+        canceled: 'bg-red-600',
     };
 
-    const { data: requests = [], refetch } = useQuery({
+    // ডাটা ফেচিং (enabled ব্যবহার করা হয়েছে যাতে ইউজার ইমেইল পাওয়ার পর রান করে)
+    const { data: requests = [], isLoading, refetch } = useQuery({
         queryKey: ['myDonationRequests', user?.email],
+        enabled: !loading && !!user?.email,
         queryFn: async () => {
-            const res = await axiosSecure.get(`/donation-requests?email=${user?.email}`)
-            return res.data
+            // আপনার ব্যাকএন্ডে এই ইমেইল কোয়েরি হ্যান্ডেল করা থাকতে হবে
+            const res = await axiosSecure.get(`/donation-requests?email=${user?.email}`);
+            return res.data;
         }
     });
 
-    if (loading) {
-        return <Loader></Loader>
-    }
-    // console.log(requests)
-
+    // ডিলিট হ্যান্ডেলার
     const handleDeleteDonationRequest = (id) => {
-        // console.log(id)
-
         Swal.fire({
             title: "Are you sure?",
-            text: "You have deleted this blood donation request!",
+            text: "You won't be able to revert this!",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
             confirmButtonText: "Yes, delete it!"
-        })
-            .then((result) => {
-                if (result.isConfirmed) {
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axiosSecure.delete(`/donation-requests/${id}`)
+                    .then(res => {
+                        if (res.data.deletedCount > 0) {
+                            refetch();
+                            Swal.fire("Deleted!", "Request has been deleted.", "success");
+                        }
+                    })
+                    .catch(() => Swal.fire("Error", "Failed to delete", "error"));
+            }
+        });
+    };
 
-                    axiosSecure.delete(`/donation-requests/${id}`)
-                        .then(res => {
-                            console.log(res.data)
-                            if (res.data.deletedCount) {
-                                refetch();
-                                Swal.fire({
-                                    title: "Deleted!",
-                                    text: "Your donation request has been deleted.",
-                                    icon: "success",
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                });
-                            }
-                        })
-                }
-            });
+    if (loading || isLoading) {
+        return <Loader />;
     }
 
     return (
-        <div>
-            <h1 className='text-2xl font-bold ml-10 mb-5'>My donation requests</h1>
+        <div className="p-4 md:p-10">
+            <div className="flex justify-between items-center mb-8">
+                <h1 className='text-3xl font-black text-gray-800 uppercase tracking-tight'>
+                    My Donation <span className="text-red-600">Requests</span>
+                </h1>
+                <Link to="/donation-request" className="btn btn-error btn-sm text-white">
+                    Create New Request
+                </Link>
+            </div>
 
-            <div className="overflow-x-auto">
-                <table className="table table-zebra">
+            <div className="overflow-x-auto shadow-sm border border-gray-100 rounded-2xl">
+                <table className="table w-full">
                     {/* head */}
-                    <thead>
-                        <tr className='text-black'>
-                            <th>SL No.</th>
-                            <th>Receipent Name</th>
+                    <thead className="bg-gray-50 text-gray-700">
+                        <tr>
+                            <th>SL</th>
+                            <th>Recipient Name</th>
                             <th>Blood Group</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            <th className="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {
-                            requests.map((request, index) => <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{request.recipientName}</td>
-                                <td>{request.bloodGroup}</td>
-                                <td>
-                                    <span
-                                        className={`px-3 py-1 rounded text-white text-sm capitalize ${statusBgMap[request.status] || 'bg-gray-600'
-                                            }`}
-                                    >
-                                        {request.status}
-                                    </span>
-                                </td>
-                                <td>
-                                    <button
-                                        className="btn"
-                                        onClick={() => {
-                                            setSelectedRequest(request);
-                                            document
-                                                .getElementById(
-                                                    'view_request_modal'
-                                                )
-                                                .showModal();
-                                        }}
-                                    >
-                                        View
-                                    </button>
-                                    <button className='btn btn-square hover:bg-primary hover:text-white mx-2'>
-                                        <FaEdit />
-                                    </button>
-                                    <button
-                                        onClick={() => handleDeleteDonationRequest(request._id)}
-                                        className='btn btn-square hover:bg-primary hover:text-white'>
-                                        <FaTrashAlt />
-                                    </button>
+                        {requests.length > 0 ? (
+                            requests.map((request, index) => (
+                                <tr key={request._id} className="hover:bg-gray-50 transition-colors">
+                                    <td className="font-bold text-gray-400">{index + 1}</td>
+                                    <td className="font-semibold text-gray-700">{request.recipientName}</td>
+                                    <td>
+                                        <span className="badge badge-error badge-outline font-bold">{request.bloodGroup}</span>
+                                    </td>
+                                    <td>
+                                        <span className={`px-3 py-1 rounded-full text-white text-[10px] font-bold uppercase tracking-wider ${statusBgMap[request.status] || 'bg-gray-400'}`}>
+                                            {request.status}
+                                        </span>
+                                    </td>
+                                    <td className="flex justify-center gap-2">
+                                        {/* View Modal Button */}
+                                        <button
+                                            onClick={() => {
+                                                setSelectedRequest(request);
+                                                document.getElementById('view_request_modal').showModal();
+                                            }}
+                                            className="btn btn-sm btn-circle btn-ghost text-blue-500"
+                                            title="View Details"
+                                        >
+                                            <FaEye size={18} />
+                                        </button>
+
+                                        {/* Edit Button */}
+                                        <Link
+                                            to={`/dashboard/edit-request/${request._id}`}
+                                            className='btn btn-sm btn-circle btn-ghost text-orange-500'
+                                            title="Edit"
+                                        >
+                                            <FaEdit size={18} />
+                                        </Link>
+
+                                        {/* Delete Button */}
+                                        <button
+                                            onClick={() => handleDeleteDonationRequest(request._id)}
+                                            className='btn btn-sm btn-circle btn-ghost text-red-500'
+                                            title="Delete"
+                                        >
+                                            <FaTrashAlt size={18} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="5" className="text-center py-10 text-gray-400 font-medium">
+                                    You haven't created any donation requests yet.
                                 </td>
                             </tr>
-                            )}
-
+                        )}
                     </tbody>
                 </table>
             </div>
-            {/* ===== SINGLE DYNAMIC MODAL ===== */}
-            <dialog id="view_request_modal" className="modal">
-                <div className="modal-box w-11/12 max-w-5xl">
+
+            {/* ===== VIEW MODAL ===== */}
+            <dialog id="view_request_modal" className="modal modal-bottom sm:modal-middle">
+                <div className="modal-box max-w-2xl rounded-3xl">
                     {selectedRequest && (
-                        <>
-                            <div className="flex justify-between items-center mb-8">
-                                <h3 className="text-2xl font-bold">
-                                    {selectedRequest.recipientName}
-                                </h3>
-                                <p className="text-xl font-bold">
-                                    Blood Group:{' '}
-                                    <span className="text-red-600">
-                                        {selectedRequest.bloodGroup}
-                                    </span>
-                                </p>
+                        <div className="space-y-6">
+                            <div className="flex justify-between items-center border-b pb-4">
+                                <h3 className="text-2xl font-black text-gray-800">Request Details</h3>
+                                <div className="badge badge-error p-4 text-white font-bold text-lg">{selectedRequest.bloodGroup}</div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <h4 className="text-xl font-bold mb-3">
-                                        Address Information
-                                    </h4>
-                                    <p>
-                                        District:{' '}
-                                        {
-                                            selectedRequest.recipientDistrict
-                                        }
-                                    </p>
-                                    <p>
-                                        Upazila:{' '}
-                                        {
-                                            selectedRequest.recipientUpazila
-                                        }
-                                    </p>
-                                    <p>
-                                        Hospital:{' '}
-                                        {selectedRequest.hospitalName}
-                                    </p>
-                                    <p>
-                                        Local Address:{' '}
-                                        {selectedRequest.fullAddress}
-                                    </p>
+                                <div className="space-y-2">
+                                    <p className="text-xs font-bold text-gray-400 uppercase">Recipient Info</p>
+                                    <p className="font-bold">Name: <span className="font-medium">{selectedRequest.recipientName}</span></p>
+                                    <p className="font-bold">Contact: <span className="font-medium">{selectedRequest.recipientContactNo}</span></p>
+                                    <p className="font-bold">Hospital: <span className="font-medium">{selectedRequest.hospitalName}</span></p>
                                 </div>
-
-                                <div>
-                                    <h4 className="text-xl font-bold mb-3">
-                                        Patient Information
-                                    </h4>
-                                    <p>
-                                        Contact:{' '}
-                                        {
-                                            selectedRequest
-                                                .recipientContactNo
-                                        }
-                                    </p>
-                                    <p>
-                                        Donation Date:{' '}
-                                        {selectedRequest.donationDate}
-                                    </p>
-                                    <p>
-                                        Donation Time:{' '}
-                                        {selectedRequest.donationTime}
-                                    </p>
-                                    <p>
-                                        Condition:{' '}
-                                        {selectedRequest.requestMessage}
-                                    </p>
+                                <div className="space-y-2">
+                                    <p className="text-xs font-bold text-gray-400 uppercase">Donation Schedule</p>
+                                    <p className="font-bold">Date: <span className="font-medium">{selectedRequest.donationDate}</span></p>
+                                    <p className="font-bold">Time: <span className="font-medium text-red-500">{selectedRequest.donationTime}</span></p>
+                                    <p className="font-bold">Location: <span className="font-medium">{selectedRequest.recipientDistrict}, {selectedRequest.recipientUpazila}</span></p>
                                 </div>
                             </div>
-                        </>
-                    )}
 
+                            <div className="bg-gray-50 p-4 rounded-2xl border border-dashed">
+                                <p className="text-xs font-bold text-gray-400 uppercase mb-2">Patient Condition / Message</p>
+                                <p className="italic text-gray-600">"{selectedRequest.requestMessage}"</p>
+                            </div>
+
+                            {selectedRequest.status === 'inprogress' && (
+                                <div className="alert alert-info rounded-xl py-2">
+                                    <p className="text-sm font-bold text-white uppercase">Accepted By: {selectedRequest.donorName || "A Volunteer"}</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
                     <div className="modal-action">
                         <form method="dialog">
-                            <button className="btn">Close</button>
+                            <button className="btn btn-neutral px-8 rounded-xl font-bold">Close</button>
                         </form>
                     </div>
                 </div>

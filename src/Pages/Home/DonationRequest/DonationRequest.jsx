@@ -59,11 +59,15 @@ const DonationRequest = () => {
             };
 
             await axiosSecure.post('/donation-requests', donationRequest);
-            toast.success('Donation request created successfully!');
+            toast.success('Donation request created successfully!', {
+                position:'top-center'
+            });
             reset();
         } catch (error) {
             console.error(error);
-            toast.error('Failed to create donation request');
+            toast.error('Failed to create donation request', {
+                position:'top-center'
+            });
         }
     };
 
