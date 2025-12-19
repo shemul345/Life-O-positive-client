@@ -8,17 +8,14 @@ const FundingPage = () => {
     const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
 
-    // States
     const [amount, setAmount] = useState('');
     const [loading, setLoading] = useState(false);
-    // Guest info states (Added to solve 'not defined' error)
     const [guestName, setGuestName] = useState('');
     const [guestEmail, setGuestEmail] = useState('');
 
     const handleFunding = async (e) => {
         e.preventDefault();
 
-        // Final Donor Data Logic
         const donorName = user?.displayName || guestName;
         const donorEmail = user?.email || guestEmail;
 
@@ -26,7 +23,7 @@ const FundingPage = () => {
             return Swal.fire("Error", "Please provide your name and email", "error");
         }
 
-        setLoading(true); // Now being used correctly
+        setLoading(true);
 
         const fundingInfo = {
             amount: parseFloat(amount),
@@ -37,11 +34,10 @@ const FundingPage = () => {
         try {
             const res = await axiosSecure.post('/create-funding-checkout', fundingInfo);
             if (res.data.url) {
-                // Stripe চেকআউটে যাওয়ার আগে লোডিং ফিনিশ করার দরকার নেই কারণ পেজ রিডাইরেক্ট হবে
                 window.location.assign(res.data.url);
             }
         } catch (error) {
-            setLoading(false); // Error হলে লোডিং বন্ধ করতে হবে
+            setLoading(false);
             console.error("Connection Error Details:", error);
             Swal.fire("Error", "Could not connect to server. Check if your backend is running!", "error");
         }
@@ -55,7 +51,6 @@ const FundingPage = () => {
                 <p className="text-gray-500 mb-6 text-sm">Your contribution helps us save lives.</p>
 
                 <form onSubmit={handleFunding} className="space-y-4">
-                    {/* যদি ইউজার লগইন না থাকে তবে নাম এবং ইমেইল ইনপুট দেখাবে */}
                     {!user && (
                         <div className="space-y-3">
                             <div className="relative">
@@ -81,7 +76,7 @@ const FundingPage = () => {
                         </div>
                     )}
 
-                    {/* Amount Input */}
+                    {/* Amount */}
                     <input
                         type="number"
                         placeholder="Enter Amount (USD)"

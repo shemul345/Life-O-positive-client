@@ -8,7 +8,7 @@ import { Link } from 'react-router';
 const DonationRequests = () => {
     const axiosPublic = useAxiosPublic();
     const [currentPage, setCurrentPage] = useState(0);
-    const size = 15; // প্রতি পেজে ১৫টি
+    const size = 15;
 
     const { data, isLoading } = useQuery({
         queryKey: ['publicPendingRequests', currentPage],

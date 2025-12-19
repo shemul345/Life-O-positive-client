@@ -5,17 +5,21 @@ import DonorPortalFeatures from '../DonorPortalFeatures/DonorPortalFeatures';
 import Mission from '../Mission/MIssion';
 import SearchPage from '../SearchPage/SearchPage';
 import FundingPage from '../../Funding/FundingPage';
+import ImpactStats from '../ImpactStats/ImpactStats';
+import Testimonials from '../Testimonials/Testimonials';
+import FAQ from '../FAQ/FAQ';
 
 
 const Home = () => {
     return (
         <div>
             <Banner></Banner>
-            <HelpWay></HelpWay>
-            <SearchPage></SearchPage>
-            <DonorPortalFeatures></DonorPortalFeatures>
-            <FundingPage></FundingPage>
+            <ImpactStats></ImpactStats>
             <Mission></Mission>
+            <HelpWay></HelpWay>
+            <DonorPortalFeatures></DonorPortalFeatures>
+            <Testimonials></Testimonials>
+            <FAQ></FAQ>
         </div>
     );
 };

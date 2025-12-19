@@ -12,7 +12,6 @@ const MyDonationRequests = () => {
     const axiosSecure = useAxiosSecure();
     const [selectedRequest, setSelectedRequest] = useState(null);
 
-    // স্ট্যাটাস অনুযায়ী কালার ম্যাপ (ব্যাকএন্ড স্ট্যাটাসের সাথে মিল রেখে)
     const statusBgMap = {
         pending: 'bg-orange-600',
         inprogress: 'bg-blue-600',
@@ -20,18 +19,15 @@ const MyDonationRequests = () => {
         canceled: 'bg-red-600',
     };
 
-    // ডাটা ফেচিং (enabled ব্যবহার করা হয়েছে যাতে ইউজার ইমেইল পাওয়ার পর রান করে)
     const { data: requests = [], isLoading, refetch } = useQuery({
         queryKey: ['myDonationRequests', user?.email],
         enabled: !loading && !!user?.email,
         queryFn: async () => {
-            // আপনার ব্যাকএন্ডে এই ইমেইল কোয়েরি হ্যান্ডেল করা থাকতে হবে
             const res = await axiosSecure.get(`/donation-requests?email=${user?.email}`);
             return res.data;
         }
     });
 
-    // ডিলিট হ্যান্ডেলার
     const handleDeleteDonationRequest = (id) => {
         Swal.fire({
             title: "Are you sure?",

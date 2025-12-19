@@ -9,7 +9,6 @@ const UserHome = () => {
     const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
 
-    // ইউজারের বিস্তারিত তথ্য লোড করা
     const { data: userData = {}, isLoading } = useQuery({
         queryKey: ['userProfile', user?.email],
         queryFn: async () => {

@@ -5,10 +5,6 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useLoaderData } from 'react-router';
 
-/**
- * Professional Custom Marker Configuration
- * Using a medical-red themed pin for brand consistency
- */
 const customIcon = new L.Icon({
     iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
     iconSize: [32, 32],
@@ -17,21 +13,13 @@ const customIcon = new L.Icon({
 });
 
 const CollectionArea = () => {
-    // 1. Data & State Management
-    const collectionCenters = useLoaderData(); // Data from 64 districts
+    const collectionCenters = useLoaderData(); 
     const mapRef = useRef(null);
     const [searchQuery, setSearchQuery] = useState("");
 
-    // 2. Map Configuration (Bangladesh Centric)
-    // Zoom 7 allows the user to see all 64 districts at once upon loading
     const position = [23.6850, 90.3563];
     const initialZoom = 7;
 
-    /**
-     * handleSearch Logic:
-     * Filters through the district names and the sub-area (Upazila) arrays.
-     * If a match is found, the map "flies" to that specific coordinate.
-     */
     const handleSearch = (e) => {
         e.preventDefault();
         const query = searchQuery.toLowerCase().trim();
@@ -44,7 +32,7 @@ const CollectionArea = () => {
         if (matchedLocation && mapRef.current) {
             const coord = [matchedLocation.latitude, matchedLocation.longitude];
             mapRef.current.flyTo(coord, 13, {
-                duration: 1.5, // Smooth transition time
+                duration: 1.5,
                 easeLinearity: 0.25
             });
         } else {
@@ -54,7 +42,7 @@ const CollectionArea = () => {
 
     return (
         <div className='max-w-7xl mx-auto px-6 my-16 font-sans'>
-            {/* --- Section Header --- */}
+            {/* Section Header */}
             <div className="text-center mb-12 space-y-3">
                 <h1 className='text-4xl md:text-6xl font-black text-neutral-900 tracking-tight'>
                     Our <span className="text-red-600 underline decoration-red-200 underline-offset-8">Network</span>
@@ -64,7 +52,7 @@ const CollectionArea = () => {
                 </p>
             </div>
 
-            {/* --- Search Interface --- */}
+            {/* Search Interface */}
             <div className="flex justify-center mb-10">
                 <form
                     onSubmit={handleSearch}
@@ -90,8 +78,7 @@ const CollectionArea = () => {
                 </form>
             </div>
 
-            {/* --- Map Container --- */}
-            {/* The relative container with overflow-hidden creates a clean 'app' look */}
+            {/* Map Container */}
             <div className='relative rounded-[2.5rem] overflow-hidden border-8 border-white shadow-2xl h-[650px] lg:h-[800px] z-0'>
                 <MapContainer
                     center={position}
@@ -105,8 +92,7 @@ const CollectionArea = () => {
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
 
-                    {/* --- Dynamic Markers Mapping --- */}
-                    {/* All markers are rendered simultaneously to show the full network coverage */}
+                    {/* Dynamic Markers Mapping */}
                     {collectionCenters.map((center, index) => (
                         <Marker
                             key={index}
@@ -148,7 +134,7 @@ const CollectionArea = () => {
                     ))}
                 </MapContainer>
 
-                {/* --- Live Network Badge --- */}
+                {/* Live Network Badge */}
                 <div className="absolute top-6 right-6 z-[1000] bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-white shadow-lg flex items-center gap-2">
                     <span className="relative flex h-3 w-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>

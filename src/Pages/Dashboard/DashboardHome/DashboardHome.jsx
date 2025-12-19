@@ -9,7 +9,6 @@ const DashboardHome = () => {
     const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
 
-    // ইউজারের রোল ফেচ করা (যেহেতু useAdmin নেই)
     const { data: userData, isLoading } = useQuery({
         queryKey: ['userRole', user?.email],
         queryFn: async () => {
@@ -21,7 +20,6 @@ const DashboardHome = () => {
 
     if (isLoading) return <span className="loading loading-dots loading-lg"></span>;
 
-    // রোলের ওপর ভিত্তি করে কম্পোনেন্ট রিটার্ন
     return (
         <div>
             {userData?.role === 'admin' ? <AdminHome /> : <UserHome />}

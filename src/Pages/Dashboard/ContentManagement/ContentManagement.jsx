@@ -10,9 +10,8 @@ const ContentManagement = () => {
     const axiosSecure = useAxiosSecure();
     const [filter, setFilter] = useState('all');
     const [currentPage, setCurrentPage] = useState(0);
-    const size = 10; // প্রতি পেজে ১০টি করে ডাটা
+    const size = 10;
 
-    // ডাটা ফেচিং - অবজেক্ট রেসপন্স হ্যান্ডেল করা হয়েছে
     const { data, isLoading, refetch } = useQuery({
         queryKey: ['blogs', filter, currentPage],
         queryFn: async () => {
@@ -21,13 +20,11 @@ const ContentManagement = () => {
         }
     });
 
-    // এরর হ্যান্ডেলিং: ডাটা অবজেক্ট থেকে অ্যারে এবং কাউন্ট আলাদা করা
     const blogs = data?.result || [];
     const totalCount = data?.count || 0;
     const numberOfPages = Math.ceil(totalCount / size);
     const pages = [...Array(numberOfPages).keys()];
 
-    // ব্লগ স্ট্যাটাস আপডেট (Publish/Unpublish Toggle)
     const handleStatusToggle = async (id, currentStatus) => {
         const newStatus = currentStatus === 'draft' ? 'published' : 'draft';
         const actionText = newStatus === 'published' ? 'Publish' : 'Unpublish';
@@ -49,7 +46,6 @@ const ContentManagement = () => {
         }
     };
 
-    // ব্লগ ডিলিট হ্যান্ডেলার
     const handleDelete = async (id) => {
         Swal.fire({
             title: 'Are you sure?',
@@ -91,7 +87,7 @@ const ContentManagement = () => {
                     <select
                         onChange={(e) => {
                             setFilter(e.target.value);
-                            setCurrentPage(0); // ফিল্টার চেঞ্জ করলে প্রথম পেজে ফেরত যাবে
+                            setCurrentPage(0);
                         }}
                         value={filter}
                         className="select select-bordered font-bold text-gray-600 rounded-xl"
@@ -118,8 +114,8 @@ const ContentManagement = () => {
                             <div
                                 key={blog._id}
                                 className={`card shadow-sm hover:shadow-md transition-all flex flex-col rounded-[32px] overflow-hidden border ${blog.status === 'draft'
-                                        ? 'bg-amber-50 border-amber-200' // ড্রাফট হলে এই কালার হবে
-                                        : 'bg-base-100 border-base-200'  // পাবলিশড হলে যা ছিল তাই
+                                        ? 'bg-amber-50 border-amber-200'
+                                        : 'bg-base-100 border-base-200'  
                                     }`}
                             >
                                 <figure className="h-48 overflow-hidden bg-gray-100">

@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import Loader from '../../../components/Loader/Loader';
 
 const DonationRequest = () => {
-    const { user } = useAuth(); // get logged-in user info
+    const { user } = useAuth();
     const axiosSecure = useAxiosSecure();
 
     const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();

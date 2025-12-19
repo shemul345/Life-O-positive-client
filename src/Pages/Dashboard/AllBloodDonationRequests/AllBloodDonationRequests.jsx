@@ -15,7 +15,6 @@ const AllBloodDonationRequests = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const size = 15;
 
-    // ডাটা ফেচিং - এরর ফিক্স করা হয়েছে (data.result ব্যবহার করে)
     const { data, isLoading, refetch } = useQuery({
         queryKey: ['allBloodDonationRequests', filter, currentPage],
         queryFn: async () => {
@@ -24,13 +23,11 @@ const AllBloodDonationRequests = () => {
         }
     });
 
-    // এরর হ্যান্ডেলিং এর জন্য ডাটা সেপারেশন
     const requests = data?.result || [];
     const totalCount = data?.count || 0;
     const numberOfPages = Math.ceil(totalCount / size);
     const pages = [...Array(numberOfPages).keys()];
 
-    // স্ট্যাটাস পরিবর্তনের হ্যান্ডেলার
     const handleStatusChange = async (id, newStatus) => {
         let title = `Mark as ${newStatus}?`;
         let text = "Do you want to update this request status?";
@@ -69,7 +66,6 @@ const AllBloodDonationRequests = () => {
         }
     };
 
-    // ডিলিট করার হ্যান্ডেলার
     const handleDelete = async (id) => {
         const result = await Swal.fire({
             title: 'Are you sure?',
@@ -112,7 +108,7 @@ const AllBloodDonationRequests = () => {
                 <select
                     onChange={(e) => {
                         setFilter(e.target.value);
-                        setCurrentPage(0); // ফিল্টার চেঞ্জ করলে প্রথম পেজে নিয়ে যাবে
+                        setCurrentPage(0);
                     }}
                     value={filter}
                     className="select select-bordered w-full md:w-48 font-bold text-gray-600 rounded-xl"

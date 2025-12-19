@@ -29,7 +29,6 @@ const BlogDetails = () => {
                 />
             </div>
 
-            {/* Title & Metadata */}
             <h1 className="text-4xl font-black text-gray-900 mb-4">{blog.title}</h1>
             <div className="flex gap-4 mb-8">
                 <span className="badge badge-error p-3 text-white font-bold">{blog.status}</span>
@@ -37,10 +36,8 @@ const BlogDetails = () => {
             </div>
 
             <hr className="my-8 opacity-10" />
-
-            {/* Blog Content (HTML rendering) */}
             <div
-                className="prose lg:prose-xl max-w-none" // 'prose' ক্লাসটি এখন কাজ করবে
+                className="prose lg:prose-xl max-w-none"
                 dangerouslySetInnerHTML={{ __html: blog.content }}
             />
         </div>

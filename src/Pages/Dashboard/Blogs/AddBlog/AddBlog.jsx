@@ -12,7 +12,6 @@ const AddBlog = () => {
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
 
-    // এডিটরের কনফিগারেশন
     const config = useMemo(() => ({
         readonly: false,
         placeholder: 'Start writing your blood donation awareness blog...',
@@ -93,7 +92,6 @@ const AddBlog = () => {
                     </div>
                 </div>
 
-                {/* Jodit Editor */}
                 <div className="form-control">
                     <label className="label font-bold text-gray-700">Content</label>
                     <div className="rounded-2xl overflow-hidden border border-gray-300">

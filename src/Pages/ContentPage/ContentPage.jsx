@@ -35,12 +35,10 @@ const ContentPage = () => {
                 </p>
             </div>
 
-            {/* Content Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {blogs.length > 0 ? (
                     blogs.map(blog => (
                         <div key={blog._id} className="group bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-300">
-                            {/* Thumbnail Fix: thumbnail অথবা image যেকোনোটি থাকলে দেখাবে */}
                             <div className="relative h-56 overflow-hidden bg-gray-100">
                                 <img
                                     src={blog.thumbnail || blog.image}

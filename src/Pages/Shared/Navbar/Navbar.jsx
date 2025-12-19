@@ -15,6 +15,7 @@ const Navbar = () => {
 
         {
             user && <>
+                <li><NavLink to="funding">Donate Fund</NavLink></li>
                 <li><NavLink to="/dashboard">Dashboard</NavLink></li>
             </>
         }
@@ -33,7 +34,7 @@ const Navbar = () => {
             })
     }
     return (
-        <div className="navbar bg-base-100 shadow-sm rounded-xl">
+        <div className="navbar bg-base-100/80 backdrop-blur-md sticky top-0 z-50 shadow-sm rounded-xl">
             <div className="navbar-start">
                 <div className="dropdown">
                     <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">

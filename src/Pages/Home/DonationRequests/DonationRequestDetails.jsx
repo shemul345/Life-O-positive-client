@@ -24,7 +24,6 @@ const DonationRequestDetails = () => {
     });
 
     const handleConfirmDonation = async () => {
-        // যদি লগইন না থাকে
         if (!user) {
             return navigate('/login');
         }
@@ -51,7 +50,7 @@ const DonationRequestDetails = () => {
                 const res = await axiosSecure.patch(`/donation-requests/status/${id}`, donationInfo);
                 if (res.data.modifiedCount > 0) {
                     Swal.fire('Success!', 'Thank you for accepting the request. Please contact the requester.', 'success');
-                    navigate('/dashboard/my-donation-requests'); // অথবা অন্য কোনো পেজ
+                    navigate('/dashboard/my-donation-requests'); 
                 }
             } catch {
                 Swal.fire('Error', 'Something went wrong!', 'error');

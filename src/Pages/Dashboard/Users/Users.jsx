@@ -11,7 +11,6 @@ const Users = () => {
     const [filterStatus, setFilterStatus] = useState('all');
     const itemsPerPage = 15;
 
-    // ১. ডাটা ফেচিং
     const { refetch, data: usersData = { result: [], count: 0 }, isLoading } = useQuery({
         queryKey: ['users', currentPage, filterStatus],
         queryFn: async () => {
@@ -24,7 +23,6 @@ const Users = () => {
     const numberOfPages = count > 0 ? Math.ceil(count / itemsPerPage) : 0;
     const pages = numberOfPages > 0 ? [...Array(numberOfPages).keys()] : [];
 
-    // ২. স্ট্যাটাস পরিবর্তন (Active/Block)
     const handleStatusChange = (user, newStatus) => {
         Swal.fire({
             title: `Confirm ${newStatus}?`,
@@ -46,7 +44,6 @@ const Users = () => {
         });
     };
 
-    // ৩. রোল পরিবর্তন
     const handleRoleChange = (user, newRole) => {
         Swal.fire({
             title: "Update Role?",
@@ -67,7 +64,6 @@ const Users = () => {
         });
     };
 
-    // ৪. ইউজার ডিলিট
     const handleDeleteUser = (user) => {
         Swal.fire({
             title: "Are you sure?",
