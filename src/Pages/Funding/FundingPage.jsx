@@ -36,9 +36,9 @@ const FundingPage = () => {
             if (res.data.url) {
                 window.location.assign(res.data.url);
             }
-        } catch (error) {
+        } catch {
             setLoading(false);
-            console.error("Connection Error Details:", error);
+            // console.error("Connection Error Details:", error);
             Swal.fire("Error", "Could not connect to server. Check if your backend is running!", "error");
         }
     };

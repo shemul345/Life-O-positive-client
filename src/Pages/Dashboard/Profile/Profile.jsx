@@ -75,8 +75,8 @@ const Profile = () => {
             } else {
                 setIsEditing(false);
             }
-        } catch (err) {
-            console.error(err);
+        } catch {
+            // console.error(err);
             Swal.fire('Error', 'Failed to update profile. Please try again.', 'error');
         }
     };

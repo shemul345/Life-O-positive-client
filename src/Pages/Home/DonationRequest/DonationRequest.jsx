@@ -63,8 +63,8 @@ const DonationRequest = () => {
                 position:'top-center'
             });
             reset();
-        } catch (error) {
-            console.error(error);
+        } catch {
+            // console.error(error);
             toast.error('Failed to create donation request', {
                 position:'top-center'
             });

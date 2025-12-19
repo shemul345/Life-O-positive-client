@@ -20,8 +20,8 @@ const Mission = () => {
                 if (!res.ok) throw new Error('Failed to load mission.json');
                 const data = await res.json();
                 setVolunteer(data);
-            } catch (err) {
-                console.error('Error loading mission.json:', err);
+            } catch {
+                // console.error('Error loading mission.json:', err);
             }
         };
         load();

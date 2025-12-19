@@ -55,10 +55,10 @@ const SearchPage = () => {
         const upazila = form.upazila.value;
 
         try {
-            const res = await axios.get(`http://localhost:3000/donors-search?bloodGroup=${encodeURIComponent(bloodGroup)}&district=${district}&upazila=${upazila}`);
+            const res = await axios.get(`https://life-o-positive-server.vercel.app/donors-search?bloodGroup=${encodeURIComponent(bloodGroup)}&district=${district}&upazila=${upazila}`);
             setDonors(res.data);
-        } catch (error) {
-            console.error("Search failed", error);
+        } catch{
+            // console.error("Search failed", error);
         } finally {
             setLoading(false);
             setSearched(true);

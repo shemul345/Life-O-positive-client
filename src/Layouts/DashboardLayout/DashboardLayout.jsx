@@ -65,15 +65,10 @@ const DashboardLayout = () => {
                         {/* Donor Links */}
                         
                            
-                                <li><NavLink to="/dashboard/my-donation-requests" className={navLinkClass}><BiDonateBlood size={20} /> My Requests</NavLink></li>
-                                <li><NavLink to="/donation-request" className={navLinkClass}><FaPlusCircle size={20} /> Create Request</NavLink></li>
+                        <li><NavLink to="/dashboard/my-donation-requests" className={navLinkClass}><BiDonateBlood size={20} /> My Requests</NavLink></li>
+                        <li><NavLink to="/dashboard/all-blood-donation-requests" className={navLinkClass}><MdOutlineFormatListBulleted size={20} /> All Requests</NavLink></li>
+                        <li><NavLink to="/donation-request" className={navLinkClass}><FaPlusCircle size={20} /> Create Request</NavLink></li>
                             
-                        
-
-                        {/* Volunteer & Admin Links */}
-                        {(role === 'admin' || role === 'volunteer') && (
-                            <li><NavLink to="/dashboard/all-blood-donation-requests" className={navLinkClass}><MdOutlineFormatListBulleted size={20} /> All Requests</NavLink></li>
-                        )}
 
                         {/* Admin Specific */}
                         {role === 'admin' && (

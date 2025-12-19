@@ -29,8 +29,8 @@ const Navbar = () => {
                     position: "top-center"
                 });
             })
-            .catch(error => {
-                console.log(error)
+            .catch(() => {
+                // console.log(error)
             })
     }
     return (

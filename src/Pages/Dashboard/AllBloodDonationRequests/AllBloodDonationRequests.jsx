@@ -6,10 +6,12 @@ import Loader from '../../../components/Loader/Loader';
 import Swal from 'sweetalert2';
 import { FaEdit, FaTrashAlt, FaEye, FaCheckCircle, FaTimesCircle, FaHandHoldingHeart } from 'react-icons/fa';
 import { Link } from 'react-router';
+import useRole from '../../../hooks/useRole';
 
 const AllBloodDonationRequests = () => {
     const { user, loading } = useAuth();
     const axiosSecure = useAxiosSecure();
+    const { role } = useRole();
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [filter, setFilter] = useState('all');
     const [currentPage, setCurrentPage] = useState(0);
@@ -196,9 +198,13 @@ const AllBloodDonationRequests = () => {
                                             <Link to={`/dashboard/edit-request/${request._id}`} className="btn btn-sm btn-circle btn-ghost text-orange-400">
                                                 <FaEdit size={16} />
                                             </Link>
-                                            <button onClick={() => handleDelete(request._id)} className="btn btn-sm btn-circle btn-ghost text-red-400">
-                                                <FaTrashAlt size={16} />
-                                            </button>
+
+                                            {(role === 'admin' || role === 'volunteer') && (
+                                                <button onClick={() => handleDelete(request._id)} className="btn btn-sm btn-circle btn-ghost text-red-400">
+                                                    <FaTrashAlt size={16} />
+                                                </button>
+                                            )}
+
                                         </div>
                                     </td>
                                 </tr>
@@ -229,37 +235,67 @@ const AllBloodDonationRequests = () => {
 
             {/* Modal */}
             <dialog id="view_request_modal" className="modal modal-bottom sm:modal-middle">
-                <div className="modal-box max-w-2xl rounded-3xl">
+                <div className="modal-box max-w-2xl rounded-3xl border-t-8 border-red-500 p-0 overflow-hidden">
                     {selectedRequest && (
-                        <div className="space-y-6">
-                            <div className="flex justify-between items-center border-b pb-4">
-                                <h3 className="text-2xl font-black text-neutral">Request Details</h3>
-                                <div className="badge badge-error p-4 text-white font-bold text-lg">{selectedRequest.bloodGroup}</div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-3">
-                                    <p className="text-sm text-gray-400 uppercase font-bold">Recipient Info</p>
-                                    <p className="font-bold">Name: <span className="font-medium">{selectedRequest.recipientName}</span></p>
-                                    <p className="font-bold">Hospital: <span className="font-medium">{selectedRequest.hospitalName}</span></p>
+                        <div>
+                            {/* Modal Header */}
+                            <div className="p-6 border-b flex justify-between items-center bg-gray-50/50">
+                                <div>
+                                    <h3 className="text-2xl font-black text-gray-800 uppercase tracking-tight">Request Details</h3>
+                                    <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Requester: {selectedRequest.requesterName}</p>
                                 </div>
-                                <div className="space-y-3">
-                                    <p className="text-sm text-gray-400 uppercase font-bold">Location & Time</p>
-                                    <p className="font-bold">Date: <span className="font-medium">{selectedRequest.donationDate}</span></p>
-                                    <p className="font-bold">Time: <span className="font-medium text-red-500">{selectedRequest.donationTime}</span></p>
+                                <div className="badge badge-error p-4 text-white font-bold text-xl shadow-md">
+                                    {selectedRequest.bloodGroup}
                                 </div>
                             </div>
-                            <div className="bg-gray-50 p-4 rounded-2xl border border-dashed border-gray-300">
-                                <p className="text-sm text-gray-400 uppercase font-bold mb-2">Message</p>
-                                <p className="italic text-gray-700">"{selectedRequest.requestMessage}"</p>
+
+                            <div className="p-8 space-y-6">
+                                {/* Info Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-3">
+                                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-1">Recipient Info</p>
+                                        <p className="font-bold text-gray-700">Name: <span className="font-medium text-gray-600">{selectedRequest.recipientName}</span></p>
+                                        <p className="font-bold text-gray-700">Contact: <span className="font-medium text-gray-600">{selectedRequest.recipientContactNo}</span></p>
+                                        <p className="font-bold text-gray-700">Hospital: <span className="font-medium text-gray-600">{selectedRequest.hospitalName}</span></p>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-1">Donation Schedule</p>
+                                        <p className="font-bold text-gray-700">Date: <span className="font-medium text-gray-600">{selectedRequest.donationDate}</span></p>
+                                        <p className="font-bold text-gray-700">Time: <span className="font-medium text-red-500">{selectedRequest.donationTime}</span></p>
+                                        <p className="font-bold text-gray-700">Location: <span className="font-medium text-gray-600">{selectedRequest.recipientDistrict}, {selectedRequest.recipientUpazila}</span></p>
+                                    </div>
+                                </div>
+
+                                {/* Message Section */}
+                                <div className="bg-gray-50 p-5 rounded-2xl border border-dashed border-gray-300">
+                                    <p className="text-xs font-bold text-gray-400 uppercase mb-2 tracking-widest">Patient Condition / Message</p>
+                                    <p className="italic text-gray-600 text-sm leading-relaxed text-justify">"{selectedRequest.requestMessage}"</p>
+                                </div>
+
+                                {/* Accepted Status */}
+                                {selectedRequest.donationStatus === 'inprogress' && (
+                                    <div className="alert bg-blue-600 rounded-2xl py-3 border-none text-white shadow-lg">
+                                        <div className="flex items-center gap-3">
+                                            <FaUserCircle className="text-2xl" />
+                                            <p className="text-sm font-bold uppercase">Accepted By: {selectedRequest.donorName || "A Volunteer"}</p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
-                    <div className="modal-action">
+
+                    {/* Modal Action */}
+                    <div className="p-6 bg-gray-50/50 border-t flex justify-end">
                         <form method="dialog">
-                            <button className="btn btn-neutral px-8 rounded-xl">Close</button>
+                            <button className="btn btn-neutral px-10 rounded-xl font-bold uppercase tracking-widest shadow-lg">Close</button>
                         </form>
                     </div>
                 </div>
+                {/* Backdrop to close by clicking outside */}
+                <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                </form>
             </dialog>
         </div>
     );
