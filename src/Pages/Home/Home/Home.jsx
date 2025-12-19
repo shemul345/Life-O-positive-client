@@ -4,6 +4,7 @@ import HelpWay from '../HelpWay/HelpWay';
 import DonorPortalFeatures from '../DonorPortalFeatures/DonorPortalFeatures';
 import Mission from '../Mission/MIssion';
 import SearchPage from '../SearchPage/SearchPage';
+import FundingPage from '../../Funding/FundingPage';
 
 
 const Home = () => {
@@ -13,6 +14,7 @@ const Home = () => {
             <HelpWay></HelpWay>
             <SearchPage></SearchPage>
             <DonorPortalFeatures></DonorPortalFeatures>
+            <FundingPage></FundingPage>
             <Mission></Mission>
         </div>
     );

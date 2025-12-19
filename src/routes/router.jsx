@@ -22,6 +22,9 @@ import DonationRequestDetails from "../Pages/Home/DonationRequests/DonationReque
 import ContentPage from "../Pages/ContentPage/ContentPage";
 import NotFound from "../Pages/NotFound/NotFound";
 import AboutUs from "../Pages/AboutUs/AboutUs";
+import FundingPage from "../Pages/Funding/FundingPage";
+import FundingSuccess from "../Pages/Funding/FundingSuccess";
+import FundingCancelled from "../Pages/Funding/FundingCancelled";
 
 export const router = createBrowserRouter([
     {
@@ -60,6 +63,18 @@ export const router = createBrowserRouter([
             {
                 path: 'about-us',
                 Component: AboutUs
+            },
+            {
+                path: 'funding',
+                Component:FundingPage
+            },
+            {
+                path: 'funding-success',
+                Component:FundingSuccess
+            },
+            {
+                path: 'funding-cancelled',
+                Component:FundingCancelled
             }
         ]
     },
