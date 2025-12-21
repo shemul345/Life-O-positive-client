@@ -2,12 +2,12 @@ import React from 'react';
 import { NavLink, Outlet } from 'react-router';
 import { BiDonateBlood, BiSolidDashboard } from "react-icons/bi";
 import { FaUsers, FaPlusCircle, FaRegUserCircle, FaHome } from 'react-icons/fa';
-import { MdBloodtype, MdOutlineFormatListBulleted } from 'react-icons/md';
-import useRole from '../../hooks/useRole';
+import { MdBloodtype, MdManageAccounts, MdOutlineFormatListBulleted} from 'react-icons/md';
 import Loader from '../../components/Loader/Loader';
+import useRole from '../../hooks/useRole';
 
 const DashboardLayout = () => {
-    const { role, roleLoading } = useRole();
+    const [role, roleLoading] = useRole();
 
     if (roleLoading) return <Loader />
 
@@ -62,19 +62,34 @@ const DashboardLayout = () => {
                         <div className="divider opacity-30 my-4"></div>
                         <p className="text-[10px] font-bold text-gray-400 ml-4 mb-2 uppercase tracking-widest">Management</p>
 
-                        {/* Donor Links */}
-                        
-                           
+                        {/* ALL role links */}   
                         <li><NavLink to="/dashboard/my-donation-requests" className={navLinkClass}><BiDonateBlood size={20} /> My Requests</NavLink></li>
-                        <li><NavLink to="/dashboard/all-blood-donation-requests" className={navLinkClass}><MdOutlineFormatListBulleted size={20} /> All Requests</NavLink></li>
                         <li><NavLink to="/donation-request" className={navLinkClass}><FaPlusCircle size={20} /> Create Request</NavLink></li>
                             
-
-                        {/* Admin Specific */}
+                        {/* Admin or Volunteer Specific */}
+                        {(role === 'admin' || role === 'volunteer') && (
+                            <>
+                                <li>
+                                    <NavLink to="/dashboard/all-blood-donation-requests" className={navLinkClass}>
+                                        <MdOutlineFormatListBulleted size={20} /> All Requests
+                                    </NavLink>
+                                </li>
+                            </>
+                        )}
+                        
+                        {/* Only Admin Specific */}
                         {role === 'admin' && (
                             <>
-                                <li><NavLink to="/dashboard/users" className={navLinkClass}><FaUsers size={20} /> Manage Users</NavLink></li>
-                                <li><NavLink to="/dashboard/content-management" className={navLinkClass}><MdBloodtype size={20} /> Content Manager</NavLink></li>
+                                <li>
+                                    <NavLink to="/dashboard/users" className={navLinkClass}>
+                                        <FaUsers size={20} /> All Users
+                                    </NavLink>
+                                </li>
+                                <li>
+                                    <NavLink to="/dashboard/content-management" className={navLinkClass}>
+                                        <MdManageAccounts size={20} /> Content Management
+                                    </NavLink>
+                                </li>
                             </>
                         )}
                     </ul>

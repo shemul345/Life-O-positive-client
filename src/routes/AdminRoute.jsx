@@ -6,7 +6,7 @@ import Forbidden from '../components/Forbidden/Forbidden';
 
 const AdminRoute = ({ children }) => {
     const { loading } = useAuth();
-    const { role, roleLoading } = useRole();
+    const [role, roleLoading] = useRole();
 
     if (loading || roleLoading) {
         return <Loader></Loader>

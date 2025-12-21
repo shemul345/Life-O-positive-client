@@ -11,7 +11,7 @@ import useRole from '../../../hooks/useRole';
 const AllBloodDonationRequests = () => {
     const { user, loading } = useAuth();
     const axiosSecure = useAxiosSecure();
-    const { role } = useRole();
+    const [role] = useRole();
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [filter, setFilter] = useState('all');
     const [currentPage, setCurrentPage] = useState(0);
@@ -162,6 +162,7 @@ const AllBloodDonationRequests = () => {
                                     </td>
                                     <td>
                                         <div className="flex justify-center items-center gap-2">
+                                            {/* Everyone can see */}
                                             <button
                                                 onClick={() => { setSelectedRequest(request); document.getElementById('view_request_modal').showModal(); }}
                                                 className="btn btn-sm btn-circle btn-ghost text-blue-500" title="View Details"
@@ -169,42 +170,54 @@ const AllBloodDonationRequests = () => {
                                                 <FaEye size={18} />
                                             </button>
 
-                                            {request.status === 'pending' && (
-                                                <button
-                                                    onClick={() => handleStatusChange(request._id, 'inprogress')}
-                                                    className="btn btn-sm btn-info text-white rounded-lg flex items-center gap-1"
-                                                >
-                                                    <FaHandHoldingHeart /> Accept
-                                                </button>
-                                            )}
-
-                                            {request.status === 'inprogress' && (
+                                            {/* Allowed for both Admin and Volunteer */}
+                                            {(role === 'admin' || role === 'volunteer') && (
                                                 <>
-                                                    <button
-                                                        onClick={() => handleStatusChange(request._id, 'done')}
-                                                        className="btn btn-sm btn-success text-white rounded-lg" title="Mark Done"
-                                                    >
-                                                        <FaCheckCircle /> Done
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleStatusChange(request._id, 'canceled')}
-                                                        className="btn btn-sm btn-error text-white rounded-lg" title="Cancel"
-                                                    >
-                                                        <FaTimesCircle />
-                                                    </button>
+                                                    {request.status === 'pending' && (
+                                                        <button
+                                                            onClick={() => handleStatusChange(request._id, 'inprogress')}
+                                                            className="btn btn-sm btn-info text-white rounded-lg flex items-center gap-1"
+                                                        >
+                                                            <FaHandHoldingHeart /> Accept
+                                                        </button>
+                                                    )}
+
+                                                    {request.status === 'inprogress' && (
+                                                        <div className="flex gap-1">
+                                                            <button
+                                                                onClick={() => handleStatusChange(request._id, 'done')}
+                                                                className="btn btn-sm btn-success text-white rounded-lg" title="Mark Done"
+                                                            >
+                                                                <FaCheckCircle /> Done
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleStatusChange(request._id, 'canceled')}
+                                                                className="btn btn-sm btn-error text-white rounded-lg" title="Cancel"
+                                                            >
+                                                                <FaTimesCircle />
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                 </>
                                             )}
 
-                                            <Link to={`/dashboard/edit-request/${request._id}`} className="btn btn-sm btn-circle btn-ghost text-orange-400">
-                                                <FaEdit size={16} />
-                                            </Link>
+                                            {/* Restricted to admin only */}
+                                            {role === 'admin' && (
+                                                <Link to={`/dashboard/edit-request/${request._id}`} className="btn btn-sm btn-circle btn-ghost text-orange-400" title="Edit Request">
+                                                    <FaEdit size={16} />
+                                                </Link>
+                                            )}
 
-                                            {(role === 'admin' || role === 'volunteer') && (
-                                                <button onClick={() => handleDelete(request._id)} className="btn btn-sm btn-circle btn-ghost text-red-400">
+                                            {/* Restricted to Admin only */}
+                                            {role === 'admin' && (
+                                                <button
+                                                    onClick={() => handleDelete(request._id)}
+                                                    className="btn btn-sm btn-circle btn-ghost text-red-400"
+                                                    title="Delete Request"
+                                                >
                                                     <FaTrashAlt size={16} />
                                                 </button>
                                             )}
-
                                         </div>
                                     </td>
                                 </tr>

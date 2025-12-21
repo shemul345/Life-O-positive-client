@@ -26,6 +26,7 @@ import FundingPage from "../Pages/Funding/FundingPage";
 import FundingSuccess from "../Pages/Funding/FundingSuccess";
 import FundingCancelled from "../Pages/Funding/FundingCancelled";
 import SearchPage from "../Pages/Home/SearchPage/SearchPage";
+import AdminOrVolunteerRoute from "./AdminOrVolunteerRoute";
 
 export const router = createBrowserRouter([
     {
@@ -119,15 +120,15 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'all-blood-donation-requests',
-                Component:AllBloodDonationRequests
+                element:<AdminOrVolunteerRoute><AllBloodDonationRequests></AllBloodDonationRequests></AdminOrVolunteerRoute>
             },
             {
                 path: 'content-management',
-                Component:ContentManagement
+                element:<AdminRoute><ContentManagement></ContentManagement></AdminRoute>
             },
             {
                 path: 'content-management/add-blog',
-                Component:AddBlog
+                element:<AdminRoute><AddBlog></AddBlog></AdminRoute>
             }
             
         ]
